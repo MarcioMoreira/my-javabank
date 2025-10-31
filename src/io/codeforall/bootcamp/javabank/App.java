@@ -3,6 +3,7 @@ package io.codeforall.bootcamp.javabank;
 import io.codeforall.bootcamp.javabank.domain.Bank;
 import io.codeforall.bootcamp.javabank.domain.Customer;
 import io.codeforall.bootcamp.javabank.domain.account.Account;
+import io.codeforall.bootcamp.javabank.domain.account.AccountType;
 import io.codeforall.bootcamp.javabank.managers.AccountManager;
 import io.codeforall.bootcamp.javabank.userInterface.Menu;
 import org.academiadecodigo.bootcamp.Prompt;
@@ -63,17 +64,18 @@ public class App {
                 System.out.println("Choose type of account:");
                 System.out.println("\n1 - CHECKING");
                 System.out.println("2 - SAVINGS\n");
-                //bankRupted.addCustomer(customer1);
+
                 int accountChoice = prompt.getUserInput(scanner2);
                 switch (accountChoice) {
                     case 1:
                         System.out.println("CHECKING");
-
+                        robber.openAccount(AccountType.CHECKING);
+                        //accounts.add()
 
                         break;
                     case 2:
                         System.out.println("SAVINGS");
-
+                        robber.openAccount(AccountType.CHECKING);
 
                         break;
                 }
@@ -81,7 +83,7 @@ public class App {
             case 5:
                 // Quit
                 System.out.println("\n---------------------------------------\n");
-                System.out.println("OPTION 5 - QUITING");
+                System.out.println("OPTION 5 - LEAVING APP");
                 return;
         }
     }
