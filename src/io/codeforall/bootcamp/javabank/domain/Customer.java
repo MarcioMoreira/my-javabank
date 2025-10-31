@@ -1,54 +1,19 @@
 package io.codeforall.bootcamp.javabank.domain;
 
-import io.codeforall.bootcamp.javabank.application.Operations;
 import io.codeforall.bootcamp.javabank.domain.account.AccountType;
 import io.codeforall.bootcamp.javabank.managers.AccountManager;
 import io.codeforall.bootcamp.javabank.domain.account.Account;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * The customer domain entity
  */
 public class Customer {
 
-    private int id;
-    private String name;
-
     private AccountManager accountManager;
     private Map<Integer, Account> accounts = new HashMap<>();
-
-    /**
-     * Creates a new instance of Customer and initializes it with given id and name
-     *
-     * @param id the customer id
-     * @param name the customer name
-     */
-    public Customer(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    /**
-     * Gets the customer id
-     *
-     * @return the customer id
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * Gets the customer name
-     *
-     * @return the customer name
-     */
-    public String getName() {
-        return name;
-    }
 
     /**
      * Sets the account manager
@@ -57,24 +22,6 @@ public class Customer {
      */
     public void setAccountManager(AccountManager accountManager) {
         this.accountManager = accountManager;
-    }
-
-    /**
-     * Gets the customer accounts
-     *
-     * @return the accounts
-     */
-    public Set<Account> getAccounts() {
-        return new HashSet<>(accounts.values());
-    }
-
-    /**
-     * Gets the customer account ids
-     *
-     * @return the accounts ids
-     */
-    public Set<Integer> getAccountIds() {
-        return accounts.keySet();
     }
 
     /**

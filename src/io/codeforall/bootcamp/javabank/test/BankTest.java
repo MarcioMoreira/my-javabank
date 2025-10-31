@@ -10,16 +10,15 @@ public class BankTest {
     public boolean test() {
 
         AccountManager accountManager = new AccountManager();
-        Bank bank = new Bank();
-        bank.setAccountManager(accountManager);
+        Bank bank = new Bank(accountManager);
 
         // bank initial balance should be 0
         if (bank.getBalance() != 0) {
             return false;
         }
 
-        Customer c1 = new Customer(1, "Sergio");
-        Customer c2 = new Customer(2, "Rui");
+        Customer c1 = new Customer();
+        Customer c2 = new Customer();
         bank.addCustomer(c1);
         bank.addCustomer(c2);
 
