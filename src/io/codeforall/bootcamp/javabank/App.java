@@ -20,7 +20,14 @@ public class App {
         Bank bankRupted = new Bank(robber);
         Set<Customer> customers = new HashSet<>();
         Set<Account> accounts = new HashSet<>();
-        Customer customer1 = new Customer();
+
+        Customer indy = new Customer();
+        Customer mia = new Customer();
+        Customer noa = new Customer();
+
+        customers.add(indy);
+        customers.add(noa);
+        customers.add(mia);
 
         Prompt prompt = new Prompt(System.in, System.out);
         IntegerRangeInputScanner scanner = new IntegerRangeInputScanner(1, Integer.MAX_VALUE); // range
@@ -69,13 +76,14 @@ public class App {
                 switch (accountChoice) {
                     case 1:
                         System.out.println("CHECKING");
-                        robber.openAccount(AccountType.CHECKING);
-                        //accounts.add()
+                        accounts.add(robber.openAccount(AccountType.CHECKING));
+
+
 
                         break;
                     case 2:
                         System.out.println("SAVINGS");
-                        robber.openAccount(AccountType.CHECKING);
+                        accounts.add(robber.openAccount(AccountType.CHECKING));
 
                         break;
                 }
