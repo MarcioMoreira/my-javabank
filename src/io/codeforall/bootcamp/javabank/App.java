@@ -27,6 +27,7 @@ public class App {
         bankRupted.addCustomer(noa);
         int accountId = noa.openAccount(AccountType.CHECKING); // for default
 
+
         Prompt prompt = new Prompt(System.in, System.out);
         IntegerRangeInputScanner scanner = new IntegerRangeInputScanner(1, Integer.MAX_VALUE); // range
         int customerID = prompt.getUserInput(scanner);
@@ -39,10 +40,25 @@ public class App {
             }
         }
 
+        if (currentCustomer == null) {
+            System.out.println("Customer not found!");
+        }
 
         System.out.println("\nPlease insert your customer name");
         Scanner nameInput = new Scanner(System.in);
         String name = nameInput.nextLine();
+
+        for (Customer c : customers) {
+            if (c.getName().equals(name)) {
+                currentCustomer = c;
+                break;
+            }
+        }
+        if (currentCustomer == null) {
+            System.out.println("Customer not found!");
+            return;
+        }
+
 
         while (true) {
             Menu menu = new Menu();
