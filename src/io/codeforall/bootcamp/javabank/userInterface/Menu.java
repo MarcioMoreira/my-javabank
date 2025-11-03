@@ -7,14 +7,13 @@ import org.academiadecodigo.bootcamp.scanners.menu.MenuInputScanner;
 public class Menu {
 
     private final String[] options = {"View Balance", "Make Deposit", "Make Withdrawal", "Open Account", "Quit"};
-    private int option;
 
     public Menu() {
         welcome();
     }
 
     private String welcome() {
-        System.out.println("\n*** WELCOME TO JAVABANK ***\n");
+        System.out.println("\n\n*** WELCOME TO JAVABANK ***\n");
 
         StringBuilder sb = new StringBuilder();
         sb.append("\n1 - ").
@@ -30,11 +29,5 @@ public class Menu {
         System.out.println(sb +"\n");
         return sb.toString();
     }
-
-    public boolean checkOption(int option){
-        return option > 0 && option < 6;
-    }
-
-
 
 }

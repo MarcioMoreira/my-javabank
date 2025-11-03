@@ -15,7 +15,16 @@ public class Customer {
     private AccountManager accountManager;
     private Map<Integer, Account> accounts = new HashMap<>();
     private int id = 0;
+    private String name;
 
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     /**
      * Gets me the id of the customer
@@ -23,6 +32,10 @@ public class Customer {
      */
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**
@@ -71,6 +84,20 @@ public class Customer {
         }
 
         return balance;
+    }
+
+    public  void showAccounts() {
+        if (accounts.isEmpty()) {
+            System.out.println(name + " has no accounts yet.");
+            return;
+        }
+
+        System.out.println("\n--- Accounts for " + name + " ---");
+        for (Account account : accounts.values()) {
+            System.out.println("Account ID: " + account.getId() +
+                    " | Type: " + account.getAccountType() +
+                    " | Balance: " + account.getBalance());
+        }
     }
 
 }
