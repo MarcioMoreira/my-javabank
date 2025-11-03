@@ -75,30 +75,30 @@ public class Customer {
         return accounts.keySet();
     }
 
-    /**
-     * Gets the balance of an {@link Account}
-     *
-     * @param id the id of the account
-     * @return the account balance
-     */
-    public double getBalance(int id) {
-        return accounts.get(id).getBalance();
-    }
-
-    /**
-     * Gets the total customer balance
-     *
-     * @return the balance
-     */
-    public double getBalance() {
-
-        double balance = 0;
-        for (Account account : accounts.values()) {
-            balance += account.getBalance();
-        }
-
-        return balance;
-    }
+//    /**
+//     * Gets the balance of an {@link Account}
+//     *
+//     * @param id the id of the account
+//     * @return the account balance
+//     */
+//    public double getBalance(int id) {
+//        return accounts.get(id).getBalance();
+//    }
+//
+//    /**
+//     * Gets the total customer balance
+//     *
+//     * @return the balance
+//     */
+//    public double getBalance() {
+//
+//        double balance = 0;
+//        for (Account account : accounts.values()) {
+//            balance += account.getBalance();
+//        }
+//
+//        return balance;
+//    }
 
     /**
      * Opens a new account

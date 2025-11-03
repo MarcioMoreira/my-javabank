@@ -1,66 +1,26 @@
-package io.codeforall.bootcamp.javabank.application;
+package io.codeforall.bootcamp.javabank.controller;
 
+import io.codeforall.bootcamp.javabank.application.Messages;
+import io.codeforall.bootcamp.javabank.application.UserOptions;
 import io.codeforall.bootcamp.javabank.application.operations.BalanceOperation;
 import io.codeforall.bootcamp.javabank.application.operations.NewAccountOperation;
 import io.codeforall.bootcamp.javabank.application.operations.Operation;
 import io.codeforall.bootcamp.javabank.application.operations.transaction.DepositOperation;
 import io.codeforall.bootcamp.javabank.application.operations.transaction.WithdrawOperation;
+import io.codeforall.bootcamp.javabank.domain.Bank;
 import org.academiadecodigo.bootcamp.Prompt;
 import org.academiadecodigo.bootcamp.scanners.integer.IntegerSetInputScanner;
 import org.academiadecodigo.bootcamp.scanners.menu.MenuInputScanner;
-import io.codeforall.bootcamp.javabank.domain.Bank;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * The bank application
- */
-public class BankApplication {
-
-    private Prompt prompt;
+public class LoginController {
     private MenuInputScanner mainMenu;
-    private Map<Integer, Operation> operationsMap;
-
-    private Bank bank;
     private int accessingCustomerId;
-
-    /**
-     * Creates a new instance of a {@code BankApplication}, initializes it with the given {@link Bank}
-     *
-     * @param bank the bank instance
-     */
-    public BankApplication(Bank bank) {
-        this.bank = bank;
-        this.prompt = new Prompt(System.in, System.out);
-    }
-
-    /**
-     * Gets the prompt used for the UI
-     *
-     * @return the prompt
-     */
-    public Prompt getPrompt() {
-        return prompt;
-    }
-
-    /**
-     * Gets the bank used by this application
-     *
-     * @return the bank
-     */
-    public Bank getBank() {
-        return bank;
-    }
-
-    /**
-     * Gets the id of the customer using the Bank Application
-     *
-     * @return the customer id
-     */
-    public int getAccessingCustomerId() {
-        return accessingCustomerId;
-    }
+    private Prompt prompt;
+    private Bank bank;
+    private Map<Integer, Operation> operationsMap;
 
     /**
      * Starts the bank application
@@ -70,7 +30,7 @@ public class BankApplication {
         mainMenu = buildMainMenu();
 
         accessingCustomerId = scanCustomerId();
-        operationsMap = buildOperationsMap();
+       // operationsMap = buildOperationsMap();
         menuLoop();
     }
 
@@ -86,6 +46,7 @@ public class BankApplication {
         menuLoop();
     }
 
+
     private int scanCustomerId() {
 
         IntegerSetInputScanner scanner = new IntegerSetInputScanner(bank.getCustomerIds());
@@ -95,14 +56,14 @@ public class BankApplication {
         return prompt.getUserInput(scanner);
     }
 
-//    private MenuInputScanner buildMainMenu() {
-//
-//        MenuInputScanner mainMenu = new MenuInputScanner(UserOptions.getMessages());
-//        mainMenu.setError(Messages.ERROR_INVALID_OPTION);
-//        mainMenu.setMessage(Messages.MENU_WELCOME);
-//
-//        return mainMenu;
-//    }
+    private MenuInputScanner buildMainMenu() {
+
+        MenuInputScanner mainMenu = new MenuInputScanner(UserOptions.getMessages());
+        mainMenu.setError(Messages.ERROR_INVALID_OPTION);
+        mainMenu.setMessage(Messages.MENU_WELCOME);
+
+        return mainMenu;
+    }
 
 //    private Map<Integer, Operation> buildOperationsMap() {
 //
