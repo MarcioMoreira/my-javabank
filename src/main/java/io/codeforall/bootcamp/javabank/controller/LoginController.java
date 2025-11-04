@@ -9,6 +9,7 @@ import io.codeforall.bootcamp.javabank.view.LoginView;
 public class LoginController extends AbstractController {
 
     private Controller nextController;
+
     private Bank bank;
 
     /**

@@ -1,7 +1,7 @@
 package io.codeforall.bootcamp.javabank.view;
 
-import org.academiadecodigo.bootcamp.scanners.menu.MenuInputScanner;
 import io.codeforall.bootcamp.javabank.controller.MainController;
+import org.academiadecodigo.bootcamp.scanners.menu.MenuInputScanner;
 
 /**
  * A view used to display the main menu
@@ -30,6 +30,7 @@ public class MainView extends AbstractView {
     }
 
     private void showMenu() {
+
         MenuInputScanner scanner = new MenuInputScanner(UserOptions.getMessages());
         scanner.setError(Messages.VIEW_MAIN_ERROR);
         scanner.setMessage("\n" + Messages.VIEW_MAIN_MESSAGE + bank.getLoginCustomer().getName());

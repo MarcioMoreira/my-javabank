@@ -9,7 +9,6 @@ import io.codeforall.bootcamp.javabank.model.Customer;
 import io.codeforall.bootcamp.javabank.view.*;
 import org.academiadecodigo.bootcamp.Prompt;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,7 +44,7 @@ public class Bootstrap {
      * @param bank the bank to wire
      * @return the login controller
      */
-    public Controller wireObjects(Bank bank) {
+    public LoginController wireObjects(Bank bank) {
 
         // attach all input to standard i/o
         Prompt prompt = new Prompt(System.in, System.out);

@@ -1,4 +1,4 @@
-package io.codeforall.bootcamp.javabank.test;
+package io.codeforall.bootcamp.javabank;
 
 public class Test {
 

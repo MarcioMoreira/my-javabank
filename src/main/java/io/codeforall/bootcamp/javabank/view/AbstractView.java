@@ -1,7 +1,7 @@
 package io.codeforall.bootcamp.javabank.view;
 
-import org.academiadecodigo.bootcamp.Prompt;
 import io.codeforall.bootcamp.javabank.model.Bank;
+import org.academiadecodigo.bootcamp.Prompt;
 
 /**
  * A generic view to be used as a base for concrete view implementations

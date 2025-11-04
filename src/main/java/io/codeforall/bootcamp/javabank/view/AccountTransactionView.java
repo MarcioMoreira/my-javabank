@@ -1,9 +1,9 @@
 package io.codeforall.bootcamp.javabank.view;
 
+import io.codeforall.bootcamp.javabank.controller.transaction.AccountTransactionController;
 import io.codeforall.bootcamp.javabank.model.Customer;
 import org.academiadecodigo.bootcamp.scanners.integer.IntegerSetInputScanner;
 import org.academiadecodigo.bootcamp.scanners.precisiondouble.DoubleInputScanner;
-import io.codeforall.bootcamp.javabank.controller.transaction.AccountTransactionController;
 
 /**
  * A view used to show occurring transactions
@@ -30,7 +30,7 @@ public class AccountTransactionView extends AbstractView {
     @Override
     public void show() {
 
-        if (bank.getLoginCustomer().getAccountIds().size() == 0) {
+        if (bank.getLoginCustomer().getAccountIds().isEmpty()) {
             showNoAccounts();
             return;
         }

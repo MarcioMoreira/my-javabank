@@ -1,6 +1,5 @@
 package io.codeforall.bootcamp.javabank;
 
-import io.codeforall.bootcamp.javabank.controller.Controller;
 import io.codeforall.bootcamp.javabank.controller.LoginController;
 import io.codeforall.bootcamp.javabank.model.Bank;
 
@@ -19,7 +18,7 @@ public class App {
         Bootstrap bootstrap = new Bootstrap();
         bank = bootstrap.generateTestData();
 
-        Controller loginController = bootstrap.wireObjects(bank);
+        LoginController loginController = bootstrap.wireObjects(bank);
 
         // start application
         loginController.init();
