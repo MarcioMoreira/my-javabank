@@ -39,7 +39,7 @@ public class LoginView extends AbstractView {
         System.out.println("\n" + Messages.VIEW_LOGIN_WELCOME);
     }
 
-    private void showLoginPrompt() {
+    protected void showLoginPrompt() {
 
         IntegerInputScanner scanner = new IntegerInputScanner();
         scanner.setMessage("\n" + Messages.VIEW_LOGIN_MESSAGE);
