@@ -1,9 +1,7 @@
 package io.codeforall.bootcamp.javabank;
 
 import io.codeforall.bootcamp.javabank.controller.Controller;
-import io.codeforall.bootcamp.javabank.services.AccountServiceImpl;
-import io.codeforall.bootcamp.javabank.services.AuthServiceImpl;
-import io.codeforall.bootcamp.javabank.services.CustomerServiceImpl;
+import io.codeforall.bootcamp.javabank.services.*;
 
 public class App {
 
@@ -16,9 +14,13 @@ public class App {
     private void bootStrap() {
 
         Bootstrap bootstrap = new Bootstrap();
+
+        JDBCAccountService jdbcAccountService = new JDBCAccountService();
+        JDBCCustomerService jdbcCustomerService = new JDBCCustomerService();
+
         bootstrap.setAuthService(new AuthServiceImpl());
-        bootstrap.setAccountService(new AccountServiceImpl());
-        bootstrap.setCustomerService(new CustomerServiceImpl());
+        bootstrap.setAccountService(jdbcAccountService);
+        bootstrap.setCustomerService(jdbcCustomerService);
         bootstrap.loadCustomers();
 
         Controller controller = bootstrap.wireObjects();

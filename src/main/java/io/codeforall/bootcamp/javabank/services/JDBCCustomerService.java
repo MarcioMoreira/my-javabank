@@ -146,4 +146,8 @@ public class JDBCCustomerService implements CustomerService {
             throw new RuntimeException("Error adding new customer", e);
         }
     }
+
+    public void setConnection(Connection connection) {
+        this.dbConnection = connection;
+    }
 }

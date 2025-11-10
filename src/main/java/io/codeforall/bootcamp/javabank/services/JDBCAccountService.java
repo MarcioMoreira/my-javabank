@@ -154,7 +154,9 @@ public class JDBCAccountService implements AccountService {
             throw new RuntimeException("Error transferring funds", e);
         }
     }
-    
 
 
+    public void setConnection(Connection connection) {
+        this.dbConnection = connection;
+    }
 }

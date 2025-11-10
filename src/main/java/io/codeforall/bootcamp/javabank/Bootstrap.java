@@ -1,15 +1,14 @@
 package io.codeforall.bootcamp.javabank;
 
+import io.codeforall.bootcamp.ConnectionManager;
 import io.codeforall.bootcamp.javabank.controller.*;
+import io.codeforall.bootcamp.javabank.services.*;
 import io.codeforall.bootcamp.javabank.view.*;
 import org.academiadecodigo.bootcamp.Prompt;
 import io.codeforall.bootcamp.javabank.controller.transaction.DepositController;
 import io.codeforall.bootcamp.javabank.controller.transaction.WithdrawalController;
 import io.codeforall.bootcamp.javabank.factories.AccountFactory;
 import io.codeforall.bootcamp.javabank.model.Customer;
-import io.codeforall.bootcamp.javabank.services.AccountServiceImpl;
-import io.codeforall.bootcamp.javabank.services.AuthServiceImpl;
-import io.codeforall.bootcamp.javabank.services.CustomerServiceImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +19,9 @@ import java.util.Map;
 public class Bootstrap {
 
     private AuthServiceImpl authService;
-    private CustomerServiceImpl customerService;
-    private AccountServiceImpl accountService;
+    private JDBCCustomerService customerService;
+    private JDBCAccountService accountService;
+
 
     /**
      * Sets the authentication service
@@ -37,7 +37,7 @@ public class Bootstrap {
      *
      * @param customerService the customer service to set
      */
-    public void setCustomerService(CustomerServiceImpl customerService) {
+    public void setCustomerService(JDBCCustomerService customerService) {
         this.customerService = customerService;
     }
 
@@ -46,7 +46,7 @@ public class Bootstrap {
      *
      * @param accountService the account service to set
      */
-    public void setAccountService(AccountServiceImpl accountService) {
+    public void setAccountService(JDBCAccountService accountService) {
         this.accountService = accountService;
     }
 
@@ -139,6 +139,10 @@ public class Bootstrap {
         controllerMap.put(UserOptions.WITHDRAW.getOption(), withdrawalController);
 
         mainController.setControllerMap(controllerMap);
+
+        ConnectionManager connectionManager = new ConnectionManager();
+        customerService.setConnection(connectionManager.getConnection());
+        accountService.setConnection(connectionManager.getConnection());
 
         return loginController;
     }
