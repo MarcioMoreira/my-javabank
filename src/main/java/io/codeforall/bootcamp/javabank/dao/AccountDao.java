@@ -5,8 +5,7 @@ import java.util.List;
 public class AccountDao implements UserDao{
     @Override
     public List findAll() {
-        List<Object> objects = List.of();
-        return objects;
+        return List.of();
     }
 
     @Override
