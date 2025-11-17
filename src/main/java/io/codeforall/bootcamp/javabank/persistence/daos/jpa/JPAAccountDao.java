@@ -24,7 +24,7 @@ public class JPAAccountDao implements AccountDao {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<Account> query = em.createQuery("SELECT a FROM abstracAccount a" , Account.class);
+            TypedQuery<Account> query = em.createQuery("SELECT a FROM AbstractModel a" , Account.class);
             return query.getResultList();
         }finally {
             if (em != null){
@@ -40,7 +40,7 @@ public class JPAAccountDao implements AccountDao {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<Account> query = em.createQuery("SELECT a FROM Account a WHERE a.id = :id" , Account.class);
+            TypedQuery<Account> query = em.createQuery("SELECT a FROM AbstractModel a WHERE a.id = :id" , Account.class);
             query.setParameter("id",id);
         }finally {
             if (em != null){

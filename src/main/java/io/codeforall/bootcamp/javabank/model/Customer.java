@@ -3,6 +3,8 @@ package io.codeforall.bootcamp.javabank.model;
 import io.codeforall.bootcamp.javabank.model.account.Account;
 
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
