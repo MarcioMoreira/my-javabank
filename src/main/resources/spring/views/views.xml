@@ -1,0 +1,38 @@
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+<bean name="DepositView" class="io.codeforall.bootcamp.javabank.view.AccountTransactionView">
+        <property name="transactionController" ref="DepositController"/>
+        <property name="prompt" ref="prompt"/>
+    </bean>
+
+    <bean name="WithdrawView" class="io.codeforall.bootcamp.javabank.view.AccountTransactionView">
+        <property name="transactionController" ref="WithdrawalController"/>
+        <property name="prompt" ref="prompt"/>
+    </bean>
+
+    <bean name="BalanceView" class="io.codeforall.bootcamp.javabank.view.BalanceView">
+        <property name="balanceController" ref="BalanceController"/>
+    </bean>
+
+    <bean name="LoginView" class="io.codeforall.bootcamp.javabank.view.LoginView">
+        <property name="loginController" ref="LoginController"/>
+        <property name="prompt" ref="prompt"/>
+    </bean>
+
+    <bean name="MainView" class="io.codeforall.bootcamp.javabank.view.MainView">
+        <property name="prompt" ref="prompt"/>
+        <property name="mainController" ref="MainController"/>
+    </bean>
+
+    <bean name="Messages" class="io.codeforall.bootcamp.javabank.view.Messages"/>
+
+    <bean name="NewAccountView" class="io.codeforall.bootcamp.javabank.view.NewAccountView">
+        <property name="newAccountController" ref="NewAccountController"/>
+    </bean>
+
+    <bean name="RecipientsView" class="io.codeforall.bootcamp.javabank.view.RecipientsView">
+        <property name="recipientsController" ref="RecipientsController"/>
+    </bean>
+</beans>

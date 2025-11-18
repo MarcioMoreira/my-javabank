@@ -1,0 +1,19 @@
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+<bean name="AccountServiceImpl" class="io.codeforall.bootcamp.javabank.services.AccountServiceImpl">
+        <property name="accountDao" ref="JpaAccountDao"/>
+        <property name="transactionManager" ref="JpaTransactionManager"/>
+    </bean>
+
+    <bean name="CustomerServiceImpl" class="io.codeforall.bootcamp.javabank.services.CustomerServiceImpl">
+        <property name="customerDao" ref="JpaCustomerDao"/>
+        <property name="transactionManager" ref="JpaTransactionManager"/>
+    </bean>
+
+    <bean name="AuthServiceImpl" class="io.codeforall.bootcamp.javabank.services.AuthServiceImpl">
+        <property name="customerService" ref="CustomerServiceImpl"/>
+    </bean>
+
+</beans>

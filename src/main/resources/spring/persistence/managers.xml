@@ -1,0 +1,12 @@
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+<bean name="JpaSessionManager" class="io.codeforall.bootcamp.javabank.persistence.jpa.JpaSessionManager">
+            <constructor-arg name="emf" ref="emFactory"/>
+    </bean>
+
+    <bean name="JpaTransactionManager" class="io.codeforall.bootcamp.javabank.persistence.jpa.JpaTransactionManager">
+        <constructor-arg name="sm" ref="JpaSessionManager"/>
+    </bean>
+</beans>

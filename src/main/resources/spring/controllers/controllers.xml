@@ -1,0 +1,57 @@
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+<bean name="BalanceController" class="io.codeforall.bootcamp.javabank.controller.BalanceController">
+        <property name="customerService" ref="CustomerServiceImpl"/>
+        <property name="view" ref="BalanceView"/>
+        <property name="authService" ref="AuthServiceImpl"/>
+    </bean>
+
+    <bean name="LoginController" class="io.codeforall.bootcamp.javabank.controller.LoginController">
+        <property name="view" ref="LoginView"/>
+        <property name="authService" ref="AuthServiceImpl"/>
+        <property name="nextController" ref="MainController"/>
+    </bean>
+
+    <bean name="NewAccountController" class="io.codeforall.bootcamp.javabank.controller.NewAccountController">
+        <property name="view" ref="NewAccountView"/>
+        <property name="authService" ref="AuthServiceImpl"/>
+        <property name="accountService" ref="AccountServiceImpl"/>
+        <property name="accountFactory" ref="AccountFactory"/>
+    </bean>
+
+    <bean name="RecipientsController" class="io.codeforall.bootcamp.javabank.controller.RecipientsController">
+        <property name="view" ref="RecipientsView"/>
+        <property name="authService" ref="AuthServiceImpl"/>
+        <property name="customerService" ref="CustomerServiceImpl"/>
+    </bean>
+
+    <bean name="DepositController" class="io.codeforall.bootcamp.javabank.controller.transaction.DepositController">
+        <property name="authService" ref="AuthServiceImpl"/>
+        <property name="accountService" ref="AccountServiceImpl"/>
+        <property name="customerService" ref="CustomerServiceImpl"/>
+        <property name="view" ref="DepositView"/>
+    </bean>
+
+    <bean name="WithdrawalController" class="io.codeforall.bootcamp.javabank.controller.transaction.WithdrawalController">
+        <property name="authService" ref="AuthServiceImpl"/>
+        <property name="accountService" ref="AccountServiceImpl"/>
+        <property name="customerService" ref="CustomerServiceImpl"/>
+        <property name="view" ref="WithdrawView"/>
+    </bean>
+
+    <bean name="MainController" class="io.codeforall.bootcamp.javabank.controller.MainController">
+        <property name="view" ref="MainView"/>
+        <property name="authService" ref="AuthServiceImpl"/>
+        <property name="controllerMap">
+            <map>
+                <entry key="1" value-ref="BalanceController"/>
+                <entry key="2" value-ref="DepositController"/>
+                <entry key="3" value-ref="WithdrawalController"/>
+                <entry key="4" value-ref="NewAccountController"/>
+                <entry key="5" value-ref="RecipientsController"/>
+            </map>
+        </property>
+    </bean>
+</beans>

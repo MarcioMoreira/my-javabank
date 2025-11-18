@@ -1,0 +1,16 @@
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+<bean id="JpaCustomerDao" class="io.codeforall.bootcamp.javabank.persistence.dao.jpa.JpaCustomerDao">
+        <constructor-arg name="sm" ref="JpaSessionManager"/>
+    </bean>
+
+    <bean id="JpaAccountDao" class="io.codeforall.bootcamp.javabank.persistence.dao.jpa.JpaAccountDao">
+            <constructor-arg name="sm" ref="JpaSessionManager"/>
+    </bean>
+
+    <bean id="JpaRecipientDao" class="io.codeforall.bootcamp.javabank.persistence.dao.jpa.JpaRecipientDao">
+        <constructor-arg name="sm" ref="JpaSessionManager"/>
+    </bean>
+</beans>
