@@ -43,7 +43,6 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer get(Integer id) {
 
         try {
-
             tx.beginRead();
             return customerDao.findById(id);
 
