@@ -2,18 +2,19 @@ package io.codeforall.bootcamp.javabank.services;
 
 import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
 import io.codeforall.bootcamp.javabank.persistence.TransactionException;
-import io.codeforall.bootcamp.javabank.persistence.TransactionManager;
 import io.codeforall.bootcamp.javabank.persistence.dao.AccountDao;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 /**
  * An {@link AccountService} implementation
  */
+@Transactional
 public class AccountServiceImpl implements AccountService {
 
     private AccountDao accountDao;
-    private TransactionManager tx;
+
 
     /**
      * Sets the account data access object
@@ -24,29 +25,13 @@ public class AccountServiceImpl implements AccountService {
         this.accountDao = accountDao;
     }
 
-    /**
-     * Sets the transaction manager
-     *
-     * @param tx the transaction manager to set
-     */
-    public void setTransactionManager(TransactionManager tx) {
-        this.tx = tx;
-    }
 
     /**
      * @see AccountService#get(Integer)
      */
     @Override
     public Account get(Integer id) {
-
-        try {
-
-            tx.beginRead();
-            return accountDao.findById(id);
-
-        } finally {
-            tx.commit();
-        }
+        return accountDao.findById(id);
     }
 
     /**
@@ -54,24 +39,7 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public Integer add(Account account) {
-
-        Integer id = null;
-
-        try {
-
-            tx.beginWrite();
-
-            id = accountDao.saveOrUpdate(account).getId();
-
-            tx.commit();
-
-
-        } catch (TransactionException ex) {
-
-            tx.rollback();
-        }
-
-        return id;
+        return accountDao.saveOrUpdate(account).getId();
     }
 
     /**
@@ -80,27 +48,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void deposit(Integer id, double amount) {
 
-        try {
+        Optional<Account> accountOptional = Optional.ofNullable(accountDao.findById(id));
 
-            tx.beginWrite();
+        accountOptional.orElseThrow(() -> new IllegalArgumentException("invalid account id")).credit(amount);
 
-            Optional<Account> accountOptional = Optional.ofNullable(accountDao.findById(id));
-
-            if (!accountOptional.isPresent()) {
-                tx.rollback();
-            }
-
-            accountOptional.orElseThrow(() -> new IllegalArgumentException("invalid account id"))
-                    .credit(amount);
-
-            accountDao.saveOrUpdate(accountOptional.get());
-
-            tx.commit();
-
-        } catch (TransactionException ex) {
-
-            tx.rollback();
-        }
+        accountDao.saveOrUpdate(accountOptional.get());
     }
 
     /**
@@ -109,27 +61,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void withdraw(Integer id, double amount) {
 
-        try {
+        Optional<Account> accountOptional = Optional.ofNullable(accountDao.findById(id));
 
-            tx.beginWrite();
+        accountOptional.orElseThrow(() -> new IllegalArgumentException("invalid account id")).debit(amount);
 
-            Optional<Account> accountOptional = Optional.ofNullable(accountDao.findById(id));
-
-            if (!accountOptional.isPresent()) {
-                tx.rollback();
-            }
-
-            accountOptional.orElseThrow(() -> new IllegalArgumentException("invalid account id"))
-                    .debit(amount);
-
-            accountDao.saveOrUpdate(accountOptional.get());
-
-            tx.commit();
-
-        } catch (TransactionException ex) {
-
-            tx.rollback();
-        }
+        accountDao.saveOrUpdate(accountOptional.get());
     }
 
     /**
@@ -138,34 +74,19 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void transfer(Integer srcId, Integer dstId, double amount) {
 
-        try {
+        Optional<Account> srcAccount = Optional.ofNullable(accountDao.findById(srcId));
+        Optional<Account> dstAccount = Optional.ofNullable(accountDao.findById(dstId));
 
-            tx.beginWrite();
+        srcAccount.orElseThrow(() -> new IllegalArgumentException("invalid account id"));
+        dstAccount.orElseThrow(() -> new IllegalArgumentException("invalid account id"));
 
-            Optional<Account> srcAccount = Optional.ofNullable(accountDao.findById(srcId));
-            Optional<Account> dstAccount = Optional.ofNullable(accountDao.findById(dstId));
-
-            if (!srcAccount.isPresent() || !dstAccount.isPresent()) {
-                tx.rollback();
-            }
-
-            srcAccount.orElseThrow(() -> new IllegalArgumentException("invalid account id"));
-            dstAccount.orElseThrow(() -> new IllegalArgumentException("invalid account id"));
-
-            if (srcAccount.get().canDebit(amount) && dstAccount.get().canCredit(amount)) {
-                srcAccount.get().debit(amount);
-                dstAccount.get().credit(amount);
-            }
-
-            accountDao.saveOrUpdate(srcAccount.get());
-            accountDao.saveOrUpdate(dstAccount.get());
-
-            tx.commit();
-
-        } catch (TransactionException ex) {
-
-            tx.rollback();
+        if (srcAccount.get().canDebit(amount) && dstAccount.get().canCredit(amount)) {
+            srcAccount.get().debit(amount);
+            dstAccount.get().credit(amount);
         }
+        accountDao.saveOrUpdate(srcAccount.get());
+        accountDao.saveOrUpdate(dstAccount.get());
+
     }
 }
 

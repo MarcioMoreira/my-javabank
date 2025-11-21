@@ -9,7 +9,6 @@
 
     <!-- c3p0 database connection pool management -->
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-
         <property name="driverClass" value="org.postgresql.Driver"/>
         <property name="jdbcUrl" value="jdbc:postgresql://${prod.jdbc.host}/${prod.jdbc.database}"/>
         <property name="user" value="${prod.jdbc.username}"/>

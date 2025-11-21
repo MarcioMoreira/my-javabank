@@ -1,14 +1,11 @@
 package io.codeforall.bootcamp.javabank.persistence.dao.jpa;
 
 import io.codeforall.bootcamp.javabank.persistence.model.Model;
-import io.codeforall.bootcamp.javabank.persistence.TransactionException;
 import io.codeforall.bootcamp.javabank.persistence.dao.Dao;
-import io.codeforall.bootcamp.javabank.persistence.jpa.JpaSessionManager;
-import org.hibernate.HibernateException;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.List;
 
 /**
@@ -19,8 +16,8 @@ import java.util.List;
  */
 public abstract class GenericJpaDao<T extends Model> implements Dao<T> {
 
-    protected JpaSessionManager sm;
     protected Class<T> modelType;
+    protected EntityManager entityManager;
 
     /**
      * Initializes a new JPA DAO instance given a model type
@@ -31,13 +28,9 @@ public abstract class GenericJpaDao<T extends Model> implements Dao<T> {
         this.modelType = modelType;
     }
 
-    /**
-     * Sets the session manager
-     *
-     * @param sm the session manager to set
-     */
-    public void setSm(JpaSessionManager sm) {
-        this.sm = sm;
+    @PersistenceContext
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     /**
@@ -45,22 +38,8 @@ public abstract class GenericJpaDao<T extends Model> implements Dao<T> {
      */
     @Override
     public List<T> findAll() {
-
-        try {
-
-            EntityManager em = sm.getCurrentSession();
-
-            CriteriaQuery<T> criteriaQuery = em.getCriteriaBuilder().createQuery(modelType);
-            Root<T> root = criteriaQuery.from(modelType);
-            return em.createQuery(criteriaQuery).getResultList();
-
-            // Using JPQL
-            // return em.createQuery( "from " + modelType.getSimpleName(), modelType).getResultList();
-
-
-        } catch (HibernateException ex) {
-            throw new TransactionException(ex);
-        }
+        CriteriaQuery<T> criteriaQuery = entityManager.getCriteriaBuilder().createQuery(modelType);
+        return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
     /**
@@ -68,15 +47,7 @@ public abstract class GenericJpaDao<T extends Model> implements Dao<T> {
      */
     @Override
     public T findById(Integer id) {
-
-        try {
-
-            EntityManager em = sm.getCurrentSession();
-            return em.find(modelType, id);
-
-        } catch (HibernateException ex) {
-            throw new TransactionException(ex);
-        }
+        return entityManager.find(modelType, id);
     }
 
     /**
@@ -84,15 +55,7 @@ public abstract class GenericJpaDao<T extends Model> implements Dao<T> {
      */
     @Override
     public T saveOrUpdate(T modelObject) {
-
-        try {
-
-            EntityManager em = sm.getCurrentSession();
-            return em.merge(modelObject);
-
-        } catch (HibernateException ex) {
-            throw new TransactionException(ex);
-        }
+        return entityManager.merge(modelObject);
     }
 
     /**
@@ -100,14 +63,6 @@ public abstract class GenericJpaDao<T extends Model> implements Dao<T> {
      */
     @Override
     public void delete(Integer id) {
-
-        try {
-
-            EntityManager em = sm.getCurrentSession();
-            em.remove(em.find(modelType, id));
-
-        } catch (HibernateException ex) {
-            throw new TransactionException(ex);
-        }
+        entityManager.remove(entityManager.find(modelType, id));
     }
 }
