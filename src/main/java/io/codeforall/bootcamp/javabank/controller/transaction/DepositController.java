@@ -1,9 +1,14 @@
 package io.codeforall.bootcamp.javabank.controller.transaction;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 /**
  * A controller used for deposit transactions
  * @see AbstractAccountTransactionController
  */
+@Controller
+@RequestMapping
 public class DepositController extends AbstractAccountTransactionController {
 
     /**

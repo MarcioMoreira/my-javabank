@@ -4,12 +4,14 @@ import io.codeforall.bootcamp.javabank.persistence.model.Customer;
 import io.codeforall.bootcamp.javabank.view.MainView;
 import io.codeforall.bootcamp.javabank.view.Messages;
 import io.codeforall.bootcamp.javabank.view.UserOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
 /**
  * The {@link MainView} controller
  */
+@org.springframework.stereotype.Controller
 public class MainController extends AbstractController {
 
     private Map<Integer, Controller> controllerMap;
@@ -19,6 +21,7 @@ public class MainController extends AbstractController {
      *
      * @param controllerMap the controller map to set
      */
+    @Autowired
     public void setControllerMap(Map<Integer, Controller> controllerMap) {
         this.controllerMap = controllerMap;
     }

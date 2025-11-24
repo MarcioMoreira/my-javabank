@@ -1,10 +1,15 @@
 package io.codeforall.bootcamp.javabank.services;
 
 import io.codeforall.bootcamp.javabank.persistence.model.Customer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * An {@link AuthService} implementation
  */
+@Controller
+@RequestMapping("/auth-service")
 public class AuthServiceImpl implements AuthService {
 
     private Integer accessingCustomerId;
@@ -15,6 +20,7 @@ public class AuthServiceImpl implements AuthService {
      *
      * @param customerService the customer service to set
      */
+    @Autowired
     public void setCustomerService(CustomerService customerService) {
         this.customerService = customerService;
     }

@@ -5,10 +5,14 @@ import io.codeforall.bootcamp.javabank.persistence.model.account.AccountType;
 import io.codeforall.bootcamp.javabank.services.AccountService;
 import io.codeforall.bootcamp.javabank.factories.AccountFactory;
 import io.codeforall.bootcamp.javabank.view.NewAccountView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * The {@link NewAccountView} controller
  */
+@org.springframework.stereotype.Controller
+@RequestMapping("/account")
 public class NewAccountController extends AbstractController {
 
     private Integer newAccountId;
@@ -29,6 +33,7 @@ public class NewAccountController extends AbstractController {
      *
      * @param accountFactory the account factory to set
      */
+    @Autowired
     public void setAccountFactory(AccountFactory accountFactory) {
         this.accountFactory = accountFactory;
     }
@@ -38,6 +43,7 @@ public class NewAccountController extends AbstractController {
      *
      * @param accountService the account service to set
      */
+    @Autowired
     public void setAccountService(AccountService accountService) {
         this.accountService = accountService;
     }

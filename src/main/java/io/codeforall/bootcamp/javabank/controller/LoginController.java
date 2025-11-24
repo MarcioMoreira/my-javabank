@@ -1,10 +1,14 @@
 package io.codeforall.bootcamp.javabank.controller;
 
 import io.codeforall.bootcamp.javabank.view.LoginView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * The {@link LoginView} controller
  */
+@org.springframework.stereotype.Controller
+@RequestMapping
 public class LoginController extends AbstractController {
 
     private Controller nextController;
@@ -15,6 +19,7 @@ public class LoginController extends AbstractController {
      *
      * @param nextController the next controller to set
      */
+    @Autowired
     public void setNextController(Controller nextController) {
         this.nextController = nextController;
     }
