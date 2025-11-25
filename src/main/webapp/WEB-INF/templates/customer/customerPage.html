@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>JavaBank</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          modelType="text/css"/>
+    <script modelType="application/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script modelType="application/javascript" async
+            src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+
+<style>
+
+    .bank{
+        font-family: "Times New Roman";
+        width: 450px;
+        text-align: center;
+        margin:auto;
+        margin-right: auto;
+        margin-top: auto;
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    .containerCustomer {
+        border: 1px solid gray;
+        width: 450px;
+        margin: auto;
+        margin-right: auto;
+        margin-top: auto;
+        border-radius: 10px;
+        padding: 15px;
+
+    }
+
+    .containerAccount {
+
+        border: 1px solid gray;
+        width: 450px;
+        margin: auto;
+        margin-right: auto;
+        margin-top: auto;
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    h2 {
+        padding: 10px;
+        text-align: center;
+    }
+
+
+</style>
+
+<body>
+<div class="bank">
+    <h1>JAVABANK</h1>
+    <h4>* The Mailman Way *</h4>
+</div>
+
+<div class="containerCustomer" style="margin-bottom: 20px; margin-top: 50px;">
+    <h2>Customer:</h2>
+
+    <h3 style="padding: 15px"><span th:text="${customer.id}"></span></h3>
+
+    <h4>First Name: <span th:text="${customer.firstName}"></span> </h4>
+
+    <h4>Last Name: <span th:text="${customer.lastName}"></span> </h4>
+
+    <h4>Email:  <span th:text="${customer.email}"></span></h4>
+
+    <h4>Phone: <span th:text="${customer.phone}"></span> </h4>
+
+</div>
+
+<div class="containerAccount">
+    <table class="table table-striped">
+        <h2>Accounts: </h2>
+        <tr>
+            <th>#ID</th>
+            <th>Balance</th>
+        </tr>
+        <tr th:each="account : ${accounts}">
+            <td th:text="${account.id}"></td>
+            <td th:text="${account.balance}"></td>
+        </tr>
+    </table>
+
+</div>
+</body>
+</html>
+

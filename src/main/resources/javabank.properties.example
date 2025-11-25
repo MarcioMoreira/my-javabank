@@ -9,7 +9,7 @@ test.schema.auto=create
 
 # Dev Settings
 dev.debug=true
-dev.jdbc.username=postgres
+dev.jdbc.username=codecadet
 dev.jdbc.password=
 dev.jdbc.host=localhost
 dev.jdbc.database=javabank

@@ -1,10 +1,13 @@
 package io.codeforall.bootcamp.javabank.controller;
 
+import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
+import io.codeforall.bootcamp.javabank.services.AccountService;
 import io.codeforall.bootcamp.javabank.services.CustomerService;
 import io.codeforall.bootcamp.javabank.persistence.model.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class CustomerController {
 
     private CustomerService customerService;
+    private AccountService accountService;
 
     /**
      * Sets the customer service
@@ -38,4 +42,36 @@ public class CustomerController {
         model.addAttribute("customers", customerService.list());
         return "customer/list";
     }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/{id}")
+    public String getCustomer(Model model, @PathVariable Integer id) {
+
+        // Load customer
+        Customer customer = customerService.get(id);
+
+        if (customer == null) {
+            // Optional custom error page
+            model.addAttribute("message", "Customer not found");
+            return "customer/notFound";
+        }
+
+        // Add to model
+        model.addAttribute("customer", customerService.get(id));
+        model.addAttribute("accounts", customerService.get(id).getAccounts());
+
+        return "customer/customerPage";
+    }
+
+    @Autowired
+    public void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/delete/{id}")
+    public String deleteCustomer(Model model, @PathVariable Integer id) {
+        customerService.delete(id);
+        listCustomers(model);
+        return "redirect:/customer/list";
+    }
+
 }
