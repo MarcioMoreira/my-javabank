@@ -46,6 +46,12 @@
         padding: 15px;
     }
 
+    .button{
+        margin: auto;
+        margin-right: auto;
+        margin-top: auto;
+    }
+
     h2 {
         padding: 10px;
         text-align: center;
@@ -87,8 +93,13 @@
             <td th:text="${account.balance}"></td>
         </tr>
     </table>
-
+    <div class="button">
+        <a href="/javabank1/customer/list">
+            <button>Customers List</button>
+        </a>
+    </div>
 </div>
+
 </body>
 </html>
 
