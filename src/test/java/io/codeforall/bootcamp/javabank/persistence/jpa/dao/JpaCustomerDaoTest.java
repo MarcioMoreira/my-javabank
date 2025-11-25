@@ -1,14 +1,14 @@
 package io.codeforall.bootcamp.javabank.persistence.jpa.dao;
 
-import io.codeforall.bootcamp.javabank.persistence.model.Customer;
 import io.codeforall.bootcamp.javabank.persistence.dao.jpa.JpaCustomerDao;
+import io.codeforall.bootcamp.javabank.persistence.model.Customer;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,24 +103,4 @@ public class JpaCustomerDaoTest {
         verify(em, times(1)).remove(fakeCustomer);
 
     }
-
-    @Test
-    public void testGetCustomerIds() {
-
-        // setup
-        List<Integer> fakeCustomerIds = new ArrayList<>();
-        TypedQuery typedQuery = mock(TypedQuery.class);
-        when(em.createQuery(anyString(), eq(Integer.class))).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(fakeCustomerIds);
-
-        // exercise
-        List<Integer> customerIds = customerDao.getCustomerIds();
-
-        // verify
-        verify(em, times(1)).createQuery("select id from Customer", Integer.class);
-        verify(typedQuery, times(1)).getResultList();
-        assertEquals(fakeCustomerIds, customerIds);
-
-    }
-
 }

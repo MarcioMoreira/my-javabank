@@ -1,8 +1,7 @@
 package io.codeforall.bootcamp.javabank.persistence.model;
 
 import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -182,13 +181,15 @@ public class Customer extends AbstractModel {
      */
     @Override
     public String toString() {
+
+        // printing recipients with lazy loading
+        // and no session will cause issues
         return "Customer{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
                 ", accounts=" + accounts +
-                ", recipients=" + recipients +
                 "} " + super.toString();
     }
 }

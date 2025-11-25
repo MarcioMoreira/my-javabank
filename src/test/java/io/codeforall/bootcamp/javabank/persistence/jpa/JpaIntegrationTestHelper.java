@@ -1,12 +1,11 @@
 package io.codeforall.bootcamp.javabank.persistence.jpa;
 
-import io.codeforall.bootcamp.javabank.Config;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 public class JpaIntegrationTestHelper {
 
@@ -19,7 +18,7 @@ public class JpaIntegrationTestHelper {
 
         ctx = new GenericXmlApplicationContext();
         ctx.getEnvironment().setActiveProfiles("test");
-        ctx.load(Config.SPRING_CONFIG);
+        ctx.load("file:src/main/webapp/WEB-INF/spring/spring-config.xml");
         ctx.refresh();
 
         emf = ctx.getBean(EntityManagerFactory.class);
@@ -39,6 +38,6 @@ public class JpaIntegrationTestHelper {
             emf.close();
         }
 
-        ctx.destroy();
+        ctx.close();
     }
 }

@@ -4,13 +4,12 @@ import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
 import io.codeforall.bootcamp.javabank.persistence.model.account.CheckingAccount;
 import io.codeforall.bootcamp.javabank.persistence.model.account.SavingsAccount;
 import io.codeforall.bootcamp.javabank.persistence.dao.jpa.JpaAccountDao;
+import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import java.util.ArrayList;
 import java.util.List;
 

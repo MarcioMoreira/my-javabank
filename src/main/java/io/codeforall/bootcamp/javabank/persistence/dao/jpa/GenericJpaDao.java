@@ -2,11 +2,10 @@ package io.codeforall.bootcamp.javabank.persistence.dao.jpa;
 
 import io.codeforall.bootcamp.javabank.persistence.dao.Dao;
 import io.codeforall.bootcamp.javabank.persistence.model.Model;
+import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.List;
 
 /**
@@ -18,6 +17,8 @@ import java.util.List;
 public abstract class GenericJpaDao<T extends Model> implements Dao<T> {
 
     protected Class<T> modelType;
+
+    @PersistenceContext
     protected EntityManager em;
 
     /**
@@ -34,7 +35,6 @@ public abstract class GenericJpaDao<T extends Model> implements Dao<T> {
      *
      * @param em the entity manager to set
      */
-    @PersistenceContext
     public void setEm(EntityManager em) {
         this.em = em;
     }
@@ -50,7 +50,7 @@ public abstract class GenericJpaDao<T extends Model> implements Dao<T> {
         return em.createQuery(criteriaQuery).getResultList();
 
         // Using JPA
-        // return em.createQuery( "from " + modelType.getSimpleName(), modelType).getResultList();
+        //return em.createQuery( "from " + modelType.getSimpleName(), modelType).getResultList();
     }
 
     /**
