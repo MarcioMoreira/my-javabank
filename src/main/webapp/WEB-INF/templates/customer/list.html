@@ -5,7 +5,7 @@
 </head>
 <body>
 <div class="container">
-    <h2>Customer List</h2>
+    <h2 style="padding-bottom: 20px">Customer List</h2>
     <div th:if="${not #lists.isEmpty(customers)}">
         <table class="table table-striped">
             <tr>
@@ -15,6 +15,7 @@
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Show</th>
+                <th>Edit</th>
                 <th>Delete</th>
             </tr>
             <tr th:each="customer : ${customers}">
@@ -23,10 +24,33 @@
                 <td th:text="${customer.lastName}"></td>
                 <td th:text="${customer.email}"></td>
                 <td th:text="${customer.phone}"></td>
-                <td><a th:href="@{'/customer/' + ${customer.id}}">View</a></td>
-                <td><a th:href="@{'/customer/' + ${customer.id} + '/delete'}">Delete</a></td>
+                <td><a th:href="@{/customer/{id}(id=${customer.id})}" data-method="getCustomer" style="text-decoration-color: white">
+                    <button style="color: white; background-color: dodgerblue; border-radius: 4px ;  border: none; display: inline-block; width:55px; height: 30px">
+                        View
+                    </button>
+                    </a>
+                </td>
+                <td><a th:href="@{/customer/editForm/{id}(id=${customer.id})}" data-method="editCustomer">
+                    <button style="background-color: lightgray; border-radius: 4px; border: none; display: inline-block; width:55px; height: 30px">
+                        Edit
+                    </button>
+                </a>
+                </td>
+                <td><a th:href="@{/customer/{id}/delete(id=${customer.id})}">
+                    <button style="color: white; background-color: red; border-radius: 4px; border: none; width:55px; height: 30px">
+                        Delete
+                    </button>
+                </a>
+                </a>
+                </td>
+            </tr>
             </tr>
         </table>
+        <a th:href="@{/customer/add}" >
+            <button style="background-color: lightgray; border-radius: 4px ;  border: none; display: inline-block; text-decoration-color: white ; padding: 10px">
+                New Customer
+            </button>
+        </a>
     </div>
 </div>
 </body>

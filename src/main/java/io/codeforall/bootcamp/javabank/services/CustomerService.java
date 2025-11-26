@@ -1,8 +1,10 @@
 package io.codeforall.bootcamp.javabank.services;
 
+import io.codeforall.bootcamp.javabank.dto.customerDTO.CustomerDTO;
 import io.codeforall.bootcamp.javabank.persistence.model.Recipient;
 import io.codeforall.bootcamp.javabank.persistence.model.Customer;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -55,4 +57,7 @@ public interface CustomerService {
      * @param recipientId the recipient id
      */
     void removeRecipient(Integer id, Integer recipientId);
+
+
+    void save(Customer customer);
 }

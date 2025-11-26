@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>JavaBank</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          modelType="text/css"/>
+    <script modelType="application/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script modelType="application/javascript" async
+            src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <h2 style="padding-bottom: 15px">Customer Details</h2>
+    <div class="form">
+        <form th:object="${customer}" th:action="@{/customer/save}" method="post">
+            <label for="firstName">First name:</label><br>
+            <input type="text" id="firstName" name="firstName" ><br>
+            <label for="lastName" style="padding-top: 10px">Last name:</label><br>
+            <input type="text" id="lastName" name="lastName"><br>
+            <label for="email" style="padding-top: 10px">Email:</label><br>
+            <input type="text" id="email" name="email"><br>
+            <label for="phone" style="padding-top: 10px">Phone:</label><br>
+            <input type="text" id="phone" name="phone"><br>
+
+            <input type="submit" value="Submit" style="margin-top: 15px; background-color: lightgray; border-radius: 4px ;  border: none; display: inline-block; text-decoration-color: white ; padding: 8px; width: 85px">
+
+        </form>
+    </div>
+</div>
+</body>
+</html>
