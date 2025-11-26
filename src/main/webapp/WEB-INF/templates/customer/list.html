@@ -36,26 +36,26 @@
                 <td th:text="${customer.email}"></td>
                 <td th:text="${customer.phone}"></td>
                 <td><a th:href="@{/customer/{id}(id=${customer.id})}" data-method="getCustomer" style="text-decoration-color: white">
-                    <button style="background-color: dodgerblue; border-radius: 4px ;  border: none; display: inline-block; width:55px">
+                    <button style="color: white; background-color: dodgerblue; border-radius: 4px ;  border: none; display: inline-block; width:55px; height: 30px">
                         View
                     </button>
                 </a>
                 </td>
                 <td><a th:href="@{/customer/{id}(id=${customer.id})}" data-method="getCustomer" style="text-decoration-color: white">
-                    <button style="background-color: whitesmoke; border-radius: 4px ;  border: none; display: inline-block; width:55px">
+                    <button style="background-color: lightgray; border-radius: 4px ;  border: none; display: inline-block; width:55px; height: 30px">
                         Edit
                     </button>
                 </a>
                 </td>
                 <td><a th:href="@{/customer/delete/{id}(id=${customer.id})}" data-method="deleteCustomer">
-                    <button style="background-color: red; border-radius: 4px ;  border: none; display: inline-block; text-decoration-color: white">
+                    <button style="color: white; background-color: red; border-radius: 4px ;  border: none; display: inline-block; width:55px; height: 30px">
                         Delete
                     </button>
                 </a>
                 </td>
             </tr>
         </table>
-        <button style="background-color: whitesmoke; border-radius: 4px ;  border: none; display: inline-block; text-decoration-color: white ; padding: 15px">
+        <button style="background-color: lightgray; border-radius: 4px ;  border: none; display: inline-block; text-decoration-color: white ; padding: 15px">
             New Customer
         </button>
     </div>
