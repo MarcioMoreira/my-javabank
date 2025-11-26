@@ -10,14 +10,15 @@ test.schema.auto=create
 # Dev Settings
 dev.debug=true
 dev.jdbc.username=postgres
-dev.jdbc.password=
-dev.jdbc.host=localhost
+dev.jdbc.password=pass
 dev.jdbc.database=javabank
+dev.schema.auto=create
+dev.jdbc.host=localhost
 
 # Prod Settings
 prod.debug=false
 prod.jdbc.username=postgres
-prod.jdbc.password=
+prod.jdbc.password=pass
 prod.jdbc.host=localhost
 prod.jdbc.database=javabank
 

@@ -3,10 +3,10 @@ package io.codeforall.bootcamp.javabank.persistence.jpa.dao;
 import io.codeforall.bootcamp.javabank.persistence.model.Recipient;
 import io.codeforall.bootcamp.javabank.persistence.dao.jpa.JpaRecipientDao;
 import io.codeforall.bootcamp.javabank.persistence.jpa.JpaIntegrationTestHelper;
-import jakarta.persistence.Query;
 import org.junit.Before;
 import org.junit.Test;
 
+import jakarta.persistence.Query;
 import java.util.List;
 
 import static org.junit.Assert.*;

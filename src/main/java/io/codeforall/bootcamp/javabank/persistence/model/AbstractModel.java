@@ -1,8 +1,9 @@
 package io.codeforall.bootcamp.javabank.persistence.model;
 
-import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import jakarta.persistence.*;
 import java.util.Date;
 
 /**

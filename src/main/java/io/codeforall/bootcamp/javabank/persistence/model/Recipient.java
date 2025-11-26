@@ -2,6 +2,7 @@ package io.codeforall.bootcamp.javabank.persistence.model;
 
 import jakarta.persistence.*;
 
+
 /**
  * The recipient model entity
  */

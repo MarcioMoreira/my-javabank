@@ -1,7 +1,8 @@
 package io.codeforall.bootcamp.javabank.persistence.dao.jpa;
 
-import io.codeforall.bootcamp.javabank.persistence.dao.Dao;
 import io.codeforall.bootcamp.javabank.persistence.model.Model;
+import io.codeforall.bootcamp.javabank.persistence.dao.Dao;
+
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -50,7 +51,7 @@ public abstract class GenericJpaDao<T extends Model> implements Dao<T> {
         return em.createQuery(criteriaQuery).getResultList();
 
         // Using JPA
-        //return em.createQuery( "from " + modelType.getSimpleName(), modelType).getResultList();
+        // return em.createQuery( "from " + modelType.getSimpleName(), modelType).getResultList();
     }
 
     /**

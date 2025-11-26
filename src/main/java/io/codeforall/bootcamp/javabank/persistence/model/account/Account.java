@@ -2,6 +2,7 @@ package io.codeforall.bootcamp.javabank.persistence.model.account;
 
 import io.codeforall.bootcamp.javabank.persistence.model.AbstractModel;
 import io.codeforall.bootcamp.javabank.persistence.model.Customer;
+
 import jakarta.persistence.*;
 
 /**

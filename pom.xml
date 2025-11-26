@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.codeforall.bootcamp.javabank</groupId>
-    <artifactId>javabank-step10-spring-mvc</artifactId>
+    <artifactId>javabank-step11-spring-mvc</artifactId>
     <version>0.0.1</version>
     <packaging>war</packaging>
     <name>Java Bank Webapp</name>
@@ -12,9 +12,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spring.version>6.2.10</spring.version>
+        <spring.version>6.1.14</spring.version>
         <hibernate.version>6.2.6.Final</hibernate.version>
         <thymeleaf.version>3.1.1.RELEASE</thymeleaf.version>
+        <hibernate.validator.version>7.0.1.Final</hibernate.validator.version>
         <tomcat.plugin.version>2.2</tomcat.plugin.version>
     </properties>
 
@@ -68,6 +69,11 @@
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-c3p0</artifactId>
             <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate.validator.version}</version>
         </dependency>
 
         <!-- Hibernate JPA API -->
@@ -139,7 +145,16 @@
         <finalName>Java Bank</finalName>
 
         <plugins>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
