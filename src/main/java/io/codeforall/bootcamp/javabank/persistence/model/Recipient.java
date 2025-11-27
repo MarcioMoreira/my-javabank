@@ -1,7 +1,8 @@
 package io.codeforall.bootcamp.javabank.persistence.model;
 
-import jakarta.persistence.*;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 /**
  * The recipient model entity

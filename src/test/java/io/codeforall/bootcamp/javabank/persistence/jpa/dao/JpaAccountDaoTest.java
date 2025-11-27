@@ -1,14 +1,16 @@
 package io.codeforall.bootcamp.javabank.persistence.jpa.dao;
 
+import io.codeforall.bootcamp.javabank.persistence.dao.jpa.JpaAccountDao;
 import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
 import io.codeforall.bootcamp.javabank.persistence.model.account.CheckingAccount;
 import io.codeforall.bootcamp.javabank.persistence.model.account.SavingsAccount;
-import io.codeforall.bootcamp.javabank.persistence.dao.jpa.JpaAccountDao;
-import jakarta.persistence.criteria.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import jakarta.persistence.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 import java.util.ArrayList;
 import java.util.List;
 

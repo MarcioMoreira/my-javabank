@@ -4,10 +4,12 @@ import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
 import io.codeforall.bootcamp.javabank.persistence.model.account.AccountType;
 import io.codeforall.bootcamp.javabank.persistence.model.account.CheckingAccount;
 import io.codeforall.bootcamp.javabank.persistence.model.account.SavingsAccount;
+import org.springframework.stereotype.Component;
 
 /**
  * A factory for creating accounts of different types
  */
+@Component
 public class AccountFactory {
 
     /**

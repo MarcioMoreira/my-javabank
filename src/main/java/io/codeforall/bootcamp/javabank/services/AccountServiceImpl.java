@@ -1,7 +1,8 @@
 package io.codeforall.bootcamp.javabank.services;
 
-import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
+import io.codeforall.bootcamp.javabank.errors.ErrorMessage;
 import io.codeforall.bootcamp.javabank.persistence.dao.AccountDao;
+import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,8 +79,8 @@ public class AccountServiceImpl implements AccountService {
         Optional<Account> srcAccount = Optional.ofNullable(accountDao.findById(srcId));
         Optional<Account> dstAccount = Optional.ofNullable(accountDao.findById(dstId));
 
-        srcAccount.orElseThrow(() -> new IllegalArgumentException("invalid account id"));
-        dstAccount.orElseThrow(() -> new IllegalArgumentException("invalid account id"));
+        srcAccount.orElseThrow(() -> new IllegalArgumentException(ErrorMessage.ACCOUNT_NOT_FOUND));
+        dstAccount.orElseThrow(() -> new IllegalArgumentException(ErrorMessage.ACCOUNT_NOT_FOUND));
 
         // make sure transaction can be performed
         if (srcAccount.get().canDebit(amount) && dstAccount.get().canCredit(amount)) {
@@ -91,3 +92,5 @@ public class AccountServiceImpl implements AccountService {
         accountDao.saveOrUpdate(dstAccount.get());
     }
 }
+
+

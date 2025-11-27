@@ -4,6 +4,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.*;
+
 import java.util.Date;
 
 /**
@@ -101,9 +102,9 @@ public abstract class AbstractModel implements Model {
     @Override
     public String toString() {
         return "Model{" +
-                "id=" + id +
-                ", creationTime=" + creationTime +
-                ", updateTime=" + updateTime +
-                '}';
+            "id=" + id +
+            ", creationTime=" + creationTime +
+            ", updateTime=" + updateTime +
+            '}';
     }
 }

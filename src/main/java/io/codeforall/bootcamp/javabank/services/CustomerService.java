@@ -1,7 +1,7 @@
 package io.codeforall.bootcamp.javabank.services;
 
-import io.codeforall.bootcamp.javabank.persistence.model.Recipient;
 import io.codeforall.bootcamp.javabank.persistence.model.Customer;
+import io.codeforall.bootcamp.javabank.persistence.model.Recipient;
 
 import java.util.List;
 
@@ -27,6 +27,14 @@ public interface CustomerService {
     double getBalance(Integer id);
 
     /**
+     * Saves a customer
+     *
+     * @param customer the customer to save
+     * @return the saved customer
+     */
+    Customer save(Customer customer);
+
+    /**
      * Deletes a customer
      *
      * @param id the customer id
@@ -49,9 +57,17 @@ public interface CustomerService {
     List<Recipient> listRecipients(Integer id);
 
     /**
+     * Adds a recipient to the customer
+     *
+     * @param id        the customer id
+     * @param recipient the recipient to add
+     */
+    void addRecipient(Integer id, Recipient recipient);
+
+    /**
      * Removes a recipient from the customer
      *
-     * @param id the customer id
+     * @param id          the customer id
      * @param recipientId the recipient id
      */
     void removeRecipient(Integer id, Integer recipientId);
