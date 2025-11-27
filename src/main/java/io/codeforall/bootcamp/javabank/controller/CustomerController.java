@@ -95,8 +95,6 @@ public class CustomerController {
     @RequestMapping(method = RequestMethod.GET, path = "/editForm/{id}")
     public String editCustomer(@PathVariable Integer id,  Model model) {
 
-
-
         Customer customer = customerService.get(id);
         if (customer == null) {
             return "redirect:/customer/list";
@@ -107,7 +105,7 @@ public class CustomerController {
 
 
     @RequestMapping(method = RequestMethod.POST, path = "/save")
-    public String saveCustomer(@ModelAttribute("customer") Customer customer, RedirectAttributes redirectAttributes) {
+    public String saveCustomer(@ModelAttribute("customer") Customer customer) {
 
         customerService.save(customer);
         return "redirect:/customer/list";

@@ -15,6 +15,7 @@
     <h2 style="padding-bottom: 15px">Customer Details</h2>
     <div class="form">
         <form th:object="${customer}" th:action="@{/customer/save}" method="post">
+            <input type="hidden" th:field="*{id}" ><br>
             <label for="firstName">First name:</label><br>
             <input type="text" id="firstName" name="firstName" ><br>
             <label for="lastName" style="padding-top: 10px">Last name:</label><br>
