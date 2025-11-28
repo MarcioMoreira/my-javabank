@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.util.List;
 
 @org.springframework.web.bind.annotation.RestController
-public class RestController {
+public class CustomerAPIRestController {
 
     private CustomerService customerService;
     private CustomerToCustomerDto customerToCustomerDto;
