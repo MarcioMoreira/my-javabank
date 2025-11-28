@@ -91,6 +91,11 @@ public class RestController {
         return customerService.get(id).getAccounts();
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "api/customer/{idCustomer}/account/{idAccount}/", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Account getAccount(@PathVariable("idCustomer")Integer idCustomer, @PathVariable("idAccount")Integer idAccount) {
+        return customerService.get(idCustomer).getAccounts().get(idAccount);
+    }
+
 
 
     @RequestMapping(method = RequestMethod.POST, value = "api/customer/add", produces = MediaType.APPLICATION_JSON_VALUE)
