@@ -99,7 +99,7 @@ public class RestController {
 
 
     @RequestMapping(method = RequestMethod.POST, value = "api/customer/add", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CustomerDto> addUser(@Valid @RequestBody CustomerDto customerDto, BindingResult bindingResult) {
+    public ResponseEntity<CustomerDto> addCustomer(@Valid @RequestBody CustomerDto customerDto, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
