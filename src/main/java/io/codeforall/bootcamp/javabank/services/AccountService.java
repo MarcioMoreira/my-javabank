@@ -2,45 +2,50 @@ package io.codeforall.bootcamp.javabank.services;
 
 import io.codeforall.bootcamp.javabank.exceptions.AccountNotFoundException;
 import io.codeforall.bootcamp.javabank.exceptions.CustomerNotFoundException;
+import io.codeforall.bootcamp.javabank.exceptions.RecipientNotFoundException;
 import io.codeforall.bootcamp.javabank.exceptions.TransactionInvalidException;
-import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
+import io.codeforall.bootcamp.javabank.model.account.Account;
 
 /**
- * Common interface for account services, provides methods to manage accounts and perform account transactions
+ * Common interface for account services, provides methods to manage accounts
  */
 public interface AccountService {
 
     /**
-     * Gets the account with the given id
-     *
+     * Add given account to AccountMap
+     * @param account the account to add
+     * @throws TransactionInvalidException
+     */
+    Account add(Account account) throws TransactionInvalidException;
+
+    /**
+     * Deposit amount in account with the given id
+     * @param id the account id
+     * @param amount the amount to deposit
+     */
+    void deposit(int id, double amount) throws AccountNotFoundException, TransactionInvalidException;
+
+    /**
+     * Withdraw amount from account with the given id
+     * @param id the account id
+     * @param amount the amount to withdraw
+     */
+    void withdraw(int id, double amount) throws AccountNotFoundException, TransactionInvalidException;
+
+    /**
+     * Transfer amount between two accounts
+     * @param srcId the source account id
+     * @param dstId the destiny account id
+     * @param amount the amount to transfer
+     */
+    void transfer(int srcId, int dstId, double amount, int customerId) throws AccountNotFoundException, CustomerNotFoundException, TransactionInvalidException, RecipientNotFoundException;
+
+
+    /**
+     * Get the account with the given id
      * @param id the account id
      * @return the account
+     * @throws AccountNotFoundException when the account doesn't exist
      */
-    Account get(Integer id);
-
-    /**
-     * Performs an {@link Account} deposit
-     *
-     * @param id         the account id
-     * @param customerId the customer id
-     * @param amount     the amount to deposit
-     * @throws AccountNotFoundException
-     * @throws CustomerNotFoundException
-     * @throws TransactionInvalidException
-     */
-    void deposit(Integer id, Integer customerId, double amount)
-            throws AccountNotFoundException, CustomerNotFoundException, TransactionInvalidException;
-
-    /**
-     * Perform an {@link Account} withdrawal
-     *
-     * @param id         the account id
-     * @param customerId the customer id
-     * @param amount     the amount to withdraw
-     * @throws AccountNotFoundException
-     * @throws CustomerNotFoundException
-     * @throws TransactionInvalidException
-     */
-    void withdraw(Integer id, Integer customerId, double amount)
-            throws AccountNotFoundException, CustomerNotFoundException, TransactionInvalidException;
+    Account get(int id) throws AccountNotFoundException;
 }

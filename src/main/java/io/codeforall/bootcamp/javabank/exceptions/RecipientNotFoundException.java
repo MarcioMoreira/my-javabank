@@ -7,10 +7,10 @@ import io.codeforall.bootcamp.javabank.errors.ErrorMessage;
  */
 public class RecipientNotFoundException extends JavaBankException {
 
-    /**
-     * @see JavaBankException#JavaBankException(String)
-     */
-    public RecipientNotFoundException() {
-        super(ErrorMessage.RECIPIENT_NOT_FOUND);
-    }
+        /**
+         * @see JavaBankException#JavaBankException(String)
+         */
+        public RecipientNotFoundException() {
+            super(ErrorMessage.RECIPIENT_NOT_FOUND);
+        }
 }

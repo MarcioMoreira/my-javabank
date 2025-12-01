@@ -1,9 +1,10 @@
 package io.codeforall.bootcamp.javabank.services;
 
 import io.codeforall.bootcamp.javabank.exceptions.*;
-import io.codeforall.bootcamp.javabank.persistence.model.Customer;
-import io.codeforall.bootcamp.javabank.persistence.model.Recipient;
-import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
+import io.codeforall.bootcamp.javabank.model.Address;
+import io.codeforall.bootcamp.javabank.model.Customer;
+import io.codeforall.bootcamp.javabank.model.Recipient;
+import io.codeforall.bootcamp.javabank.model.account.Account;
 
 import java.util.List;
 
@@ -13,98 +14,74 @@ import java.util.List;
 public interface CustomerService {
 
     /**
-     * Gets the customer with the given id
-     *
-     * @param id the customer id
+     * Get the customer with the given id
+     * @param customerId the customer id
      * @return the customer
      */
-    Customer get(Integer id);
+    Customer get(int customerId) throws CustomerNotFoundException;
 
     /**
-     * Gets the balance of the customer
-     *
-     * @param id the customer id
-     * @return the balance of the customer with the given id
-     * @throws CustomerNotFoundException
+     * List all customers
+     * @return a list of customers
      */
-    double getBalance(Integer id) throws CustomerNotFoundException;
+    List<Customer> list() throws CustomerNotFoundException, AccountNotFoundException;
 
     /**
-     * Saves a customer
-     *
-     * @param customer the customer to save
-     * @return the saved custoemr
+     * Get the total balance of a given customer accounts
+     * @param customerId the customer id
+     * @return the balance of all accounts of the given customer
      */
-    Customer save(Customer customer);
+    double getBalance(int customerId) throws CustomerNotFoundException;
 
     /**
-     * Deletes the customer
-     *
-     * @param id the customer id
-     * @throws CustomerNotFoundException
-     * @throws AssociationExistsException
+     * Add a given customer to customer list
+     * @param customer the customer to add
+     * @param address to add to the customer
+     * @return the customer
      */
-    void delete(Integer id) throws AssociationExistsException, CustomerNotFoundException;
+    Customer add(Customer customer, Address address);
 
     /**
-     * Gets a list of the customers
-     *
-     * @return the customers list
+     * Add given account to a customer and account service lists
+     * @param id the customer id to associate the account with
+     * @param account the account to be added
      */
-    List<Customer> list();
+    Account openAccount(Integer id, Account account) throws CustomerNotFoundException;
 
     /**
-     * Gets the list of customer recipients
-     *
-     * @param id the customer id
-     * @return the list of recipients of the customer
-     * @throws CustomerNotFoundException
+     * Close an account
+     * @param cid the id of the customer to which the account belongs to
+     * @param aid the id of the account to close
+     * @throws CustomerNotFoundException if the customer is not found
+     * @throws AccountNotFoundException if the account doesn't exist or does not belong to the client
+     * @throws TransactionInvalidException if the account still has balance
      */
-    List<Recipient> listRecipients(Integer id) throws CustomerNotFoundException;
+    void closeAccount(Integer cid, Integer aid) throws CustomerNotFoundException, AccountNotFoundException, TransactionInvalidException;
 
     /**
-     * Adds a recipient to the customer
-     *
-     * @param id        the customer id
-     * @param recipient the recipient id
-     * @throws CustomerNotFoundException
-     * @throws AccountNotFoundException
+     * Delete a customer
+     * @param id of the customer to delete
+     * @throws CustomerNotFoundException if the customer doesn't exist
+     * @throws AssociationExistsException if the customer is still associated with other entities
      */
-    Recipient addRecipient(Integer id, Recipient recipient)
-            throws CustomerNotFoundException, AccountNotFoundException;
+    void delete(Integer id) throws CustomerNotFoundException, AssociationExistsException;
 
     /**
-     * Removes a recipient from the customer
-     *
-     * @param id          the customer id
-     * @param recipientId the recipient id
-     * @throws CustomerNotFoundException
-     * @throws AccountNotFoundException
-     * @throws RecipientNotFoundException
+     * Add a recipient
+     * @param cid the id of the customer to which the recipient will be associated with
+     * @param recipient the recipient to add
+     * @return a recipient
+     * @throws CustomerNotFoundException if the customer is not found
+     * @throws AccountNotFoundException if the account number of the recipient doesn't exist on our bank
      */
-    void removeRecipient(Integer id, Integer recipientId)
-            throws CustomerNotFoundException, AccountNotFoundException, RecipientNotFoundException;
+    Recipient addRecipient(Integer cid, Recipient recipient) throws CustomerNotFoundException, AccountNotFoundException;
 
     /**
-     * Adds an account to a customer
-     *
-     * @param id      the customer id
-     * @param account the account
-     * @throws CustomerNotFoundException
-     * @throws TransactionInvalidException
+     * Remove a recipient
+     * @param cid the id of the customer to which the recipient will be associated with
+     * @param id of the recipient to remove
+     * @throws CustomerNotFoundException if the customer is not found
+     * @throws RecipientNotFoundException if the recipient is not found
      */
-    Account addAccount(Integer id, Account account)
-            throws CustomerNotFoundException, TransactionInvalidException;
-
-    /**
-     * Closes an account from the customer
-     *
-     * @param id        the customer id
-     * @param accountId the account id
-     * @throws CustomerNotFoundException
-     * @throws AccountNotFoundException
-     * @throws TransactionInvalidException
-     */
-    void closeAccount(Integer id, Integer accountId)
-            throws CustomerNotFoundException, AccountNotFoundException, TransactionInvalidException;
+    void removeRecipient(Integer cid, Integer id) throws CustomerNotFoundException, RecipientNotFoundException;
 }

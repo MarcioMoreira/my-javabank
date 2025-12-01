@@ -1,20 +1,20 @@
 package io.codeforall.bootcamp.javabank.converters;
 
-import io.codeforall.bootcamp.javabank.command.RecipientDto;
-import io.codeforall.bootcamp.javabank.persistence.model.Recipient;
-import org.springframework.core.convert.converter.Converter;
+import io.codeforall.bootcamp.javabank.dtos.RecipientDto;
+import io.codeforall.bootcamp.javabank.model.Recipient;
+
 import org.springframework.stereotype.Component;
 
 /**
- * A {@link Converter} implementation, responsible for {@link Recipient} to {@link RecipientDto} type conversion
+ * A concrete converter class that transforms an {@link Recipient} entity into an {@link RecipientDto}.
  */
 @Component
 public class RecipientToRecipientDto extends AbstractConverter<Recipient, RecipientDto> {
 
     /**
-     * Converts the recipient model object into a recipient DTO
-     * @param recipient the recipient
-     * @return the recipient DTO
+     * Convert a recipient into a recipientDto
+     * @param recipient to take the info out of
+     * @return the recipientDto
      */
     @Override
     public RecipientDto convert(Recipient recipient) {
@@ -23,8 +23,6 @@ public class RecipientToRecipientDto extends AbstractConverter<Recipient, Recipi
         recipientDto.setId(recipient.getId());
         recipientDto.setAccountNumber(recipient.getAccountNumber());
         recipientDto.setName(recipient.getName());
-        recipientDto.setEmail(recipient.getEmail());
-        recipientDto.setPhone(recipient.getPhone());
         recipientDto.setDescription(recipient.getDescription());
 
         return recipientDto;

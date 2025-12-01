@@ -1,28 +1,34 @@
 package io.codeforall.bootcamp.javabank.converters;
 
-import io.codeforall.bootcamp.javabank.command.AccountDto;
-import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
-import org.springframework.core.convert.converter.Converter;
+import io.codeforall.bootcamp.javabank.dtos.AccountDto;
+import io.codeforall.bootcamp.javabank.model.account.Account;
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
+
+
 /**
- * A {@link Converter} implementation, responsible for {@link Account} to {@link AccountDto} type conversion
+ * A concrete converter class that transforms an {@link Account} entity into an {@link AccountDto}.
  */
 @Component
 public class AccountToAccountDto extends AbstractConverter<Account, AccountDto> {
 
     /**
-     * Converts the account model object into an account DTO
-     * @param account the account
-     * @return the account DTO
+     * Convert account into accountDto
+     * @param account to take the info out of
+     * @return the accountDto
      */
     @Override
     public AccountDto convert(Account account) {
 
         AccountDto accountDto = new AccountDto();
+
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        String formattedNumber = decimalFormat.format(account.getBalance());
+
         accountDto.setId(account.getId());
-        accountDto.setType(account.getAccountType());
-        accountDto.setBalance(String.valueOf(account.getBalance()));
+        accountDto.setAccountType(account.getAccountType());
+        accountDto.setBalance(Double.parseDouble(formattedNumber));
 
         return accountDto;
     }

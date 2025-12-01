@@ -1,45 +1,45 @@
 package io.codeforall.bootcamp.javabank.converters;
 
-import io.codeforall.bootcamp.javabank.command.AccountDto;
+import io.codeforall.bootcamp.javabank.dtos.AccountDto;
 import io.codeforall.bootcamp.javabank.factories.AccountFactory;
-import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
+import io.codeforall.bootcamp.javabank.model.account.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
+
 /**
- * A {@link Converter} implementation, responsible for {@link AccountDto} to {@link Account} type conversion
+ * A {@link Converter} implementation that converts {@link AccountDto} objects to {@link Account} objects.
  */
 @Component
 public class AccountDtoToAccount implements Converter<AccountDto, Account> {
 
     private AccountFactory accountFactory;
 
-    /**
-     * Sets the account factory
-     *
-     * @param accountFactory the account factory to set
-     */
-    @Autowired
-    public void setAccountFactory(AccountFactory accountFactory) {
-        this.accountFactory = accountFactory;
-    }
 
     /**
-     * Converts the account DTO into a account model object
-     *
-     * @param accountDto the account DTO
-     * @return the account
+     * @see Converter#convert(Object)
      */
     @Override
     public Account convert(AccountDto accountDto) {
 
-        Account account = null;
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        String formattedNumber = decimalFormat.format(accountDto.getBalance());
 
-        account = accountFactory.createAccount(accountDto.getType());
-        account.credit(accountDto.getBalance() != null ? Double.parseDouble(accountDto.getBalance()) : 0);
+        Account account = accountFactory.createAccount(accountDto.getAccountType());
+        account.credit(accountDto.getBalance() != 0.0 ? Double.parseDouble(formattedNumber) : 0);
 
         return account;
+    }
+
+    /**
+     * Set the account factory
+     * @param accountFactory to set
+     */
+    @Autowired
+    public void setAccountFactory(AccountFactory accountFactory) {
+        this.accountFactory = accountFactory;
     }
 }
 

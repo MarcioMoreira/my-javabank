@@ -1,24 +1,49 @@
 package io.codeforall.bootcamp.javabank.converters;
 
-import io.codeforall.bootcamp.javabank.command.CustomerDto;
+import io.codeforall.bootcamp.javabank.dtos.CustomerDto;
+import io.codeforall.bootcamp.javabank.exceptions.CustomerNotFoundException;
+import io.codeforall.bootcamp.javabank.model.Customer;
 import io.codeforall.bootcamp.javabank.services.CustomerService;
-import io.codeforall.bootcamp.javabank.persistence.model.Customer;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 /**
- * A {@link Converter} implementation, responsible for {@link CustomerDto} to {@link Customer} type conversion
+ *  A converter class which converts {@link CustomerDto} objects into {@link Customer} objects
  */
 @Component
-public class CustomerDtoToCustomer implements Converter<CustomerDto, Customer> {
+public class CustomerDtoToCustomer {
 
     private CustomerService customerService;
+    private AddressDtoToAddress addressDtoToAddress;
 
     /**
-     * Sets the customer service
-     *
-     * @param customerService the customer service to set
+     * Convert a customerDto into a customer
+     * @param customerDto to take the info out of
+     * @return the customer
+     * @throws CustomerNotFoundException if the customer is not found
+     */
+    public Customer convert(CustomerDto customerDto) throws CustomerNotFoundException {
+
+        Customer customer = (customerDto.getId() != null ? customerService.get(customerDto.getId()) : new Customer());
+
+            customer.setFirstName(customerDto.getFirstName());
+            customer.setLastName(customerDto.getLastName());
+            customer.setEmail(customerDto.getEmail());
+            customer.setPhone(customerDto.getPhone());
+
+            if(customerDto.getId() == null) {
+                customer.setPhotoURL("profile-icon.png");
+            }
+
+            customer.setAddress(addressDtoToAddress.convert(customerDto.getAddressDto()));
+
+            return customer;
+    }
+
+    /**
+     * Set the customer service
+     * @param customerService to set
      */
     @Autowired
     public void setCustomerService(CustomerService customerService) {
@@ -26,21 +51,12 @@ public class CustomerDtoToCustomer implements Converter<CustomerDto, Customer> {
     }
 
     /**
-     * Converts the customer DTO into a customer model object
-     *
-     * @param customerDto the customer DTO
-     * @return the customer
+     * Set the addressDtoToAddress converter
+     * @param addressDtoToAddress to set
      */
-    @Override
-    public Customer convert(CustomerDto customerDto) {
-
-        Customer customer = (customerDto.getId() != null ? customerService.get(customerDto.getId()) : new Customer());
-
-        customer.setFirstName(customerDto.getFirstName());
-        customer.setLastName(customerDto.getLastName());
-        customer.setEmail(customerDto.getEmail());
-        customer.setPhone(customerDto.getPhone());
-
-        return customer;
+    @Autowired
+    public void setAddressDtoToAddress(AddressDtoToAddress addressDtoToAddress) {
+        this.addressDtoToAddress = addressDtoToAddress;
     }
 }
+

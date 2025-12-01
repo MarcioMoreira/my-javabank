@@ -13,4 +13,5 @@ public class TransactionInvalidException extends JavaBankException {
     public TransactionInvalidException() {
         super(ErrorMessage.TRANSACTION_INVALID);
     }
+
 }

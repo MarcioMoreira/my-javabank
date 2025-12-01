@@ -14,6 +14,8 @@
 
 **/javabank.properties
 javabank.properties
+**/*.properties
+*.properties
 
 # AWS User-specific
 .idea/**/aws.xml

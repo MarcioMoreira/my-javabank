@@ -1,10 +1,9 @@
 package io.codeforall.bootcamp.javabank.factories;
 
-import io.codeforall.bootcamp.javabank.errors.ErrorMessage;
-import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
-import io.codeforall.bootcamp.javabank.persistence.model.account.AccountType;
-import io.codeforall.bootcamp.javabank.persistence.model.account.CheckingAccount;
-import io.codeforall.bootcamp.javabank.persistence.model.account.SavingsAccount;
+import io.codeforall.bootcamp.javabank.model.account.Account;
+import io.codeforall.bootcamp.javabank.model.account.AccountType;
+import io.codeforall.bootcamp.javabank.model.account.CheckingAccount;
+import io.codeforall.bootcamp.javabank.model.account.SavingsAccount;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,15 +13,13 @@ import org.springframework.stereotype.Component;
 public class AccountFactory {
 
     /**
-     * Creates a new {@link Account}
-     *
+     * Create a new {@link Account}
      * @param accountType the account type
      * @return the new account
      */
-    public Account createAccount(AccountType accountType) {
+    public static Account createAccount(AccountType accountType) {
 
         Account newAccount;
-
         switch (accountType) {
             case CHECKING:
                 newAccount = new CheckingAccount();
@@ -31,9 +28,8 @@ public class AccountFactory {
                 newAccount = new SavingsAccount();
                 break;
             default:
-                throw new IllegalArgumentException(ErrorMessage.TRANSACTION_INVALID);
+                newAccount = null;
         }
-
         return newAccount;
     }
 }

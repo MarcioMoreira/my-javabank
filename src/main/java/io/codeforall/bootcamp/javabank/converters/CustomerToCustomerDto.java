@@ -1,32 +1,41 @@
 package io.codeforall.bootcamp.javabank.converters;
 
-import io.codeforall.bootcamp.javabank.command.CustomerDto;
-import io.codeforall.bootcamp.javabank.persistence.model.Customer;
-import org.springframework.core.convert.converter.Converter;
+import io.codeforall.bootcamp.javabank.dtos.CustomerDto;
+import io.codeforall.bootcamp.javabank.model.Customer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * A {@link Converter} implementation, responsible for {@link Customer} to {@link CustomerDto} type conversion
+ * A concrete converter class that transforms an {@link Customer} entity into an {@link CustomerDto}.
  */
 @Component
 public class CustomerToCustomerDto extends AbstractConverter<Customer, CustomerDto> {
 
+    private AddressToAddressDto addressToAddressDto;
+
     /**
-     * Converts the customer model object into a customer DTO
-     *
-     * @param customer the customer
-     * @return the customer DTO
+     * Convert a customer into a restCustomerDto
+     * @param customer to take info out of
+     * @return the restCustomerDto
      */
     @Override
     public CustomerDto convert(Customer customer) {
 
         CustomerDto customerDto = new CustomerDto();
-        customerDto.setId(customer.getId());
-        customerDto.setFirstName(customer.getFirstName());
-        customerDto.setLastName(customer.getLastName());
-        customerDto.setEmail(customer.getEmail());
-        customerDto.setPhone(customer.getPhone());
+
+        CustomerMapper.map(customer, customerDto);
+
+        customerDto.setAddressDto(addressToAddressDto.convert(customer.getAddress()));
 
         return customerDto;
+    }
+
+    /**
+     * Set the address data transfer object
+     * @param addressToAddressDto to set
+     */
+    @Autowired
+    public void setAddressToAddressDto(AddressToAddressDto addressToAddressDto) {
+        this.addressToAddressDto = addressToAddressDto;
     }
 }

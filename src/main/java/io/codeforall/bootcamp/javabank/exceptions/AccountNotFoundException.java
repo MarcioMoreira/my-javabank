@@ -5,7 +5,7 @@ import io.codeforall.bootcamp.javabank.errors.ErrorMessage;
 /**
  * Thrown to indicate that the account was not found
  */
-public class AccountNotFoundException extends JavaBankException {
+public class AccountNotFoundException extends JavaBankException{
 
     /**
      * @see JavaBankException#JavaBankException(String)

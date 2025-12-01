@@ -1,32 +1,296 @@
 package io.codeforall.bootcamp.javabank.services;
 
 import io.codeforall.bootcamp.javabank.exceptions.*;
-import io.codeforall.bootcamp.javabank.persistence.dao.AccountDao;
-import io.codeforall.bootcamp.javabank.persistence.dao.CustomerDao;
-import io.codeforall.bootcamp.javabank.persistence.dao.RecipientDao;
-import io.codeforall.bootcamp.javabank.persistence.model.AbstractModel;
-import io.codeforall.bootcamp.javabank.persistence.model.Customer;
-import io.codeforall.bootcamp.javabank.persistence.model.Recipient;
-import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
-import io.codeforall.bootcamp.javabank.persistence.model.account.SavingsAccount;
+import io.codeforall.bootcamp.javabank.model.Address;
+import io.codeforall.bootcamp.javabank.model.Customer;
+import io.codeforall.bootcamp.javabank.model.Recipient;
+import io.codeforall.bootcamp.javabank.model.account.Account;
+import io.codeforall.bootcamp.javabank.persistence.daos.RecipientDao;
+import io.codeforall.bootcamp.javabank.persistence.managers.TransactionManager;
+import io.codeforall.bootcamp.javabank.persistence.daos.CustomerDao;
+import io.codeforall.bootcamp.javabank.model.AbstractModel;
+import jakarta.persistence.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * An {@link CustomerService} implementation
+ */
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
+    private TransactionManager transactionManager;
     private CustomerDao customerDao;
     private RecipientDao recipientDao;
-    private AccountDao accountDao;
+    private AccountService accountService;
+
 
     /**
-     * Sets the customer data access object
-     *
-     * @param customerDao the account DAO to set
+     * @see CustomerService#get(int)
+     */
+    @Override
+    public Customer get(int customerId) throws CustomerNotFoundException {
+
+        return Optional.ofNullable(customerDao.findById(customerId)).orElseThrow(CustomerNotFoundException::new);
+    }
+
+    /**
+     * @see CustomerService#list()
+     */
+    @Override
+    public List<Customer> list() throws CustomerNotFoundException, AccountNotFoundException {
+
+        List<Customer> customers = customerDao.findAll();
+
+        for(Customer customer : customers) {
+
+            // get the balance of each customer to show
+            customer.setTotalBalance(getBalance(customer.getId()));
+        }
+
+        return customers;
+    }
+
+    /**
+     * @see CustomerService#getBalance(int)
+     */
+    @Override
+    public double getBalance(int customerId) throws CustomerNotFoundException {
+
+        return get(customerId).getAccounts().stream()
+                .mapToDouble(Account::getBalance)
+                .sum();
+    }
+
+    /**
+     * @see CustomerService#add(Customer, Address)
+     */
+    @Override
+    public Customer add(Customer customer, Address address) {
+        Customer savedCustomer = null;
+
+        try {
+            transactionManager.beginWrite();
+
+            if(customer.getPhotoURL() == null) {
+                customer.setPhotoURL("profile-icon.png");
+            }
+
+            customer.setAddress(address);
+            savedCustomer = customerDao.saveOrUpdate(customer);
+
+            transactionManager.commit();
+
+        } catch (PersistenceException e) {
+            transactionManager.rollback();
+        }
+
+        return savedCustomer;
+    }
+
+    /**
+     * @see CustomerService#openAccount(Integer, Account)
+     */
+    @Override
+    public Account openAccount(Integer id, Account account) throws CustomerNotFoundException {
+        Account newAccount = null;
+
+        try {
+
+            transactionManager.beginWrite();
+
+            Customer customer = get(id);
+
+            newAccount = accountService.add(account);
+
+            customer.addAccount(account);
+            customerDao.saveOrUpdate(customer);
+
+            transactionManager.commit();
+
+        } catch (PersistenceException | TransactionInvalidException e) {
+            transactionManager.rollback();
+
+        } finally {
+            transactionManager.rollback();
+        }
+
+        return newAccount;
+    }
+
+    /**
+     * @see CustomerService#closeAccount(Integer, Integer)
+     */
+    @Override
+    public void closeAccount(Integer id, Integer accountId)
+            throws CustomerNotFoundException, AccountNotFoundException, TransactionInvalidException {
+
+        try {
+            transactionManager.beginWrite();
+
+            Customer customer = get(id);
+
+            Account account = accountService.get(accountId);
+
+            for (Customer c : account.getCustomers()) {
+                if (!(c.getId() == id)) {
+                    throw new AccountNotFoundException();
+                }
+            }
+
+            //different from 0 in case we later decide that negative values are acceptable
+            if (account.getBalance() != 0) {
+                throw new TransactionInvalidException();
+            }
+
+            customer.removeAccount(account);
+            customerDao.saveOrUpdate(customer);
+
+            transactionManager.commit();
+
+        } catch (PersistenceException e) {
+            transactionManager.rollback();
+
+        } finally {
+            // if a TransactionInvalidException or AccountNotFoundException are thrown you want the session to stop
+            transactionManager.rollback();
+        }
+    }
+
+    /**
+     * @see CustomerService#delete(Integer)
+     */
+    public void delete(Integer id) throws CustomerNotFoundException, AssociationExistsException {
+
+        try {
+            transactionManager.beginWrite();
+
+            Customer customer = get(id);
+
+            if (!customer.getAccounts().isEmpty()) {
+                throw new AssociationExistsException();
+            }
+
+            customerDao.delete(id);
+
+            transactionManager.commit();
+
+        } catch (PersistenceException e) {
+            transactionManager.rollback();
+
+        } finally {
+            // even if a CustomerNotFoundException or AssociationExistsException is thrown we should close the session
+            transactionManager.rollback();
+        }
+    }
+
+    /**
+     * @see CustomerService#addRecipient(Integer, Recipient)
+     */
+    @Override
+    public Recipient addRecipient(Integer cid, Recipient recipient) throws CustomerNotFoundException, AccountNotFoundException {
+        Recipient addedRecipient = null;
+
+        try {
+            transactionManager.beginWrite();
+            Customer customer = get(cid);
+
+            recipient.setCustomer(customer);
+
+            if (accountService.get(recipient.getAccountNumber()) == null ||
+                    getAccountIds(customer).contains(recipient.getAccountNumber())) {
+                throw new AccountNotFoundException();
+            }
+
+            if (recipient.getId() == 0) {
+
+                customer.addRecipient(recipient);
+                customerDao.saveOrUpdate(customer);
+
+            } else {
+                recipientDao.saveOrUpdate(recipient);
+            }
+
+            addedRecipient = customer.getRecipients()
+                    .stream()
+                    .toList()
+                    .get(customer.getRecipients().size() - 1);
+
+            transactionManager.commit();
+
+        } catch (PersistenceException e) {
+            transactionManager.rollback();
+
+        } finally {
+            transactionManager.rollback();
+        }
+
+        return addedRecipient;
+    }
+
+    /**
+     * @see CustomerService#removeRecipient(Integer, Integer)
+     */
+    @Override
+    public void removeRecipient(Integer id, Integer recipientId) throws CustomerNotFoundException, RecipientNotFoundException {
+
+        try {
+            transactionManager.beginWrite();
+
+            Customer customer = get(id);
+
+            Recipient recipient = Optional.ofNullable(recipientDao.findById(recipientId))
+                    .orElseThrow(RecipientNotFoundException::new);
+
+            if (!customer.getRecipients().contains(recipient)) {
+                throw new RecipientNotFoundException();
+            }
+
+            customer.removeRecipient(recipient);
+            customerDao.saveOrUpdate(customer);
+
+            transactionManager.commit();
+
+        } catch (PersistenceException e) {
+            transactionManager.rollback();
+
+        } finally {
+            transactionManager.rollback();
+        }
+    }
+
+    /**
+     * Get the customer's accounts' ids
+     * @param customer to which the accounts belong to
+     * @return a set of account ids
+     */
+    private Set<Integer> getAccountIds(Customer customer) {
+        Set<Account> accounts = customer.getAccounts();
+
+        return accounts.stream()
+                .map(AbstractModel::getId)
+                .collect(Collectors.toSet());
+    }
+
+
+    /**
+     * Set the transaction manager
+     * @param transactionManager the transaction manager to set
+     */
+    @Autowired
+    public void setTransactionManager(TransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+
+
+    /**
+     * Set the customer data access object
+     * @param customerDao the customer DAO to set
      */
     @Autowired
     public void setCustomerDao(CustomerDao customerDao) {
@@ -34,9 +298,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     /**
-     * Sets the recipient data access object
-     *
-     * @param recipientDao the recipient DAO to set
+     * Set the recipient data access object
+     * @param recipientDao the customer DAO to set
      */
     @Autowired
     public void setRecipientDao(RecipientDao recipientDao) {
@@ -44,186 +307,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     /**
-     * Sets the account data access object
-     *
-     * @param accountDao the account DAO to set
+     * Set the account service
+     * @param accountService to set
      */
     @Autowired
-    public void setAccountDao(AccountDao accountDao) {
-        this.accountDao = accountDao;
-    }
-
-    /**
-     * @see CustomerService#get(Integer)
-     */
-    @Override
-    public Customer get(Integer id) {
-        return customerDao.findById(id);
-    }
-
-    /**
-     * @see CustomerService#getBalance(Integer)
-     */
-    @Override
-    public double getBalance(Integer id) throws CustomerNotFoundException {
-
-        Customer customer = Optional.ofNullable(customerDao.findById(id))
-                .orElseThrow(CustomerNotFoundException::new);
-
-        return customer.getAccounts().stream()
-                .mapToDouble(Account::getBalance)
-                .sum();
-    }
-
-    /**
-     * @see CustomerService#save(Customer)
-     */
-    @Transactional
-    @Override
-    public Customer save(Customer customer) {
-        return customerDao.saveOrUpdate(customer);
-    }
-
-    /**
-     * @see CustomerService#delete(Integer)
-     */
-    @Transactional
-    @Override
-    public void delete(Integer id) throws CustomerNotFoundException, AssociationExistsException {
-
-        Customer customer = Optional.ofNullable(customerDao.findById(id))
-                .orElseThrow(CustomerNotFoundException::new);
-
-        if (!customer.getAccounts().isEmpty()) {
-            throw new AssociationExistsException();
-        }
-
-        customerDao.delete(id);
-    }
-
-    /**
-     * @see CustomerService#list()
-     */
-    @Override
-    public List<Customer> list() {
-        return customerDao.findAll();
-    }
-
-    /**
-     * @see CustomerService#listRecipients(Integer)
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public List<Recipient> listRecipients(Integer id) throws CustomerNotFoundException {
-
-        // check then act logic requires transaction,
-        // event if read only
-
-        Customer customer = Optional.ofNullable(customerDao.findById(id))
-                .orElseThrow(CustomerNotFoundException::new);
-
-        return new ArrayList<>(customer.getRecipients());
-    }
-
-    /**
-     * @see CustomerService#addRecipient(Integer, Recipient)
-     */
-    @Transactional
-    @Override
-    public Recipient addRecipient(Integer id, Recipient recipient) throws CustomerNotFoundException, AccountNotFoundException {
-
-        Customer customer = Optional.ofNullable(customerDao.findById(id))
-                .orElseThrow(CustomerNotFoundException::new);
-
-        if (accountDao.findById(recipient.getAccountNumber()) == null ||
-                getAccountIds(customer).contains(recipient.getAccountNumber())) {
-            throw new AccountNotFoundException();
-        }
-
-        if (recipient.getId() == null) {
-            customer.addRecipient(recipient);
-            customerDao.saveOrUpdate(customer);
-        } else {
-            recipientDao.saveOrUpdate(recipient);
-        }
-        return customer.getRecipients().get(customer.getRecipients().size() - 1);
-    }
-
-    /**
-     * @see CustomerService#removeRecipient(Integer, Integer)
-     */
-    @Transactional
-    @Override
-    public void removeRecipient(Integer id, Integer recipientId) throws CustomerNotFoundException, RecipientNotFoundException {
-
-        Customer customer = Optional.ofNullable(customerDao.findById(id))
-                .orElseThrow(CustomerNotFoundException::new);
-
-        Recipient recipient = Optional.ofNullable(recipientDao.findById(recipientId))
-                .orElseThrow(RecipientNotFoundException::new);
-
-        if (!customer.getRecipients().contains(recipient)) {
-            throw new RecipientNotFoundException();
-        }
-
-        customer.removeRecipient(recipient);
-        customerDao.saveOrUpdate(customer);
-    }
-
-    /**
-     * @see CustomerService#addAccount(Integer, Account)
-     */
-    @Transactional
-    @Override
-    public Account addAccount(Integer id, Account account) throws CustomerNotFoundException, TransactionInvalidException {
-
-        Customer customer = Optional.ofNullable(customerDao.findById(id))
-                .orElseThrow(CustomerNotFoundException::new);
-
-        if (!account.canWithdraw() &&
-                account.getBalance() < SavingsAccount.MIN_BALANCE) {
-            throw new TransactionInvalidException();
-        }
-
-        customer.addAccount(account);
-        customerDao.saveOrUpdate(customer);
-
-        return customer.getAccounts().get(customer.getAccounts().size() - 1);
-    }
-
-    /**
-     * @see CustomerService#closeAccount(Integer, Integer)
-     */
-    @Transactional
-    @Override
-    public void closeAccount(Integer id, Integer accountId)
-            throws CustomerNotFoundException, AccountNotFoundException, TransactionInvalidException {
-
-        Customer customer = Optional.ofNullable(customerDao.findById(id))
-                .orElseThrow(CustomerNotFoundException::new);
-
-        Account account = Optional.ofNullable(accountDao.findById(accountId))
-                .orElseThrow(AccountNotFoundException::new);
-
-        if (!account.getCustomer().getId().equals(id)) {
-            throw new AccountNotFoundException();
-        }
-
-        //different from 0 in case we later decide that negative values are acceptable
-        if (account.getBalance() != 0) {
-            throw new TransactionInvalidException();
-        }
-
-        customer.removeAccount(account);
-        customerDao.saveOrUpdate(customer);
-    }
-
-    private Set<Integer> getAccountIds(Customer customer) {
-        List<Account> accounts = customer.getAccounts();
-
-        return accounts.stream()
-                .map(AbstractModel::getId)
-                .collect(Collectors.toSet());
+    public void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
     }
 }
-

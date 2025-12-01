@@ -1,46 +1,43 @@
 package io.codeforall.bootcamp.javabank.converters;
 
-import io.codeforall.bootcamp.javabank.command.RecipientDto;
+import io.codeforall.bootcamp.javabank.dtos.RecipientDto;
+import io.codeforall.bootcamp.javabank.exceptions.RecipientNotFoundException;
+import io.codeforall.bootcamp.javabank.model.Recipient;
 import io.codeforall.bootcamp.javabank.services.RecipientService;
-import io.codeforall.bootcamp.javabank.persistence.model.Recipient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 /**
- * A {@link Converter} implementation, responsible for {@link RecipientDto} to {@link Recipient} type conversion
+ * A converter class which converts {@link RecipientDto} objects into {@link Recipient} objects
  */
 @Component
-public class RecipientDtoToRecipient implements Converter<RecipientDto, Recipient> {
+public class RecipientDtoToRecipient {
 
     private RecipientService recipientService;
 
     /**
-     * Sets the recipient service
-     *
-     * @param recipientService the recipient service to set
+     * Convert recipientDto into recipient
+     * @param recipientDto to take info out of
+     * @return the recipient
+     * @throws RecipientNotFoundException if the recipient is not found
+     */
+    public Recipient convert(RecipientDto recipientDto) throws RecipientNotFoundException {
+
+        Recipient recipient = (recipientDto.getId() != null ? recipientService.getRecipient(recipientDto.getId()) : new Recipient());
+
+        recipient.setAccountNumber(recipientDto.getAccountNumber());
+        recipient.setName(recipientDto.getName());
+        recipient.setDescription(recipientDto.getDescription());
+
+        return recipient;
+    }
+
+    /**
+     * Set the recipient service
+     * @param recipientService to set
      */
     @Autowired
     public void setRecipientService(RecipientService recipientService) {
         this.recipientService = recipientService;
-    }
-
-    /**
-     * Converts the recipient DTO into a recipient model object
-     * @param recipientDto the recipient DTO
-     * @return the recipient
-     */
-    @Override
-    public Recipient convert(RecipientDto recipientDto) {
-
-        Recipient recipient = (recipientDto.getId() != null ? recipientService.get(recipientDto.getId()) : new Recipient());
-
-        recipient.setAccountNumber(recipientDto.getAccountNumber());
-        recipient.setName(recipientDto.getName());
-        recipient.setEmail(recipientDto.getEmail());
-        recipient.setPhone(recipientDto.getPhone());
-        recipient.setDescription(recipientDto.getDescription());
-
-        return recipient;
     }
 }
