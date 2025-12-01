@@ -1,20 +1,28 @@
-package io.codeforall.bootcamp.javabank.controller;
+package io.codeforall.bootcamp.javabank.controller.web;
 
+import io.codeforall.bootcamp.javabank.command.AccountDto;
+import io.codeforall.bootcamp.javabank.command.AccountTransactionDto;
 import io.codeforall.bootcamp.javabank.command.CustomerDto;
+import io.codeforall.bootcamp.javabank.command.TransferDto;
+import io.codeforall.bootcamp.javabank.services.CustomerService;
 import io.codeforall.bootcamp.javabank.converters.AccountToAccountDto;
 import io.codeforall.bootcamp.javabank.converters.CustomerDtoToCustomer;
 import io.codeforall.bootcamp.javabank.converters.CustomerToCustomerDto;
-import io.codeforall.bootcamp.javabank.converters.RecipientToRecipientDto;
-import io.codeforall.bootcamp.javabank.services.CustomerService;
+import io.codeforall.bootcamp.javabank.exceptions.AssociationExistsException;
+import io.codeforall.bootcamp.javabank.exceptions.CustomerNotFoundException;
 import io.codeforall.bootcamp.javabank.persistence.model.Customer;
+import io.codeforall.bootcamp.javabank.persistence.model.account.AccountType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.validation.Valid;
 
 /**
  * Controller responsible for rendering {@link Customer} related views
@@ -27,7 +35,6 @@ public class CustomerController {
 
     private CustomerToCustomerDto customerToCustomerDto;
     private CustomerDtoToCustomer customerDtoToCustomer;
-    private RecipientToRecipientDto recipientToRecipientDto;
     private AccountToAccountDto accountToAccountDto;
 
     /**
@@ -41,9 +48,9 @@ public class CustomerController {
     }
 
     /**
-     * Sets the converter for converting between customer model objects and customer dto objects
+     * Sets the converter for converting between customer model objects and customer DTO
      *
-     * @param customerToCustomerDto the customer to customer dto converter to set
+     * @param customerToCustomerDto the customer to customer DTO converter to set
      */
     @Autowired
     public void setCustomerToCustomerDto(CustomerToCustomerDto customerToCustomerDto) {
@@ -51,9 +58,9 @@ public class CustomerController {
     }
 
     /**
-     * Sets the converter for converting between customer dto and customer model objects
+     * Sets the converter for converting between customer DTO and customer model objects
      *
-     * @param customerDtoToCustomer the customer dto to customer converter to set
+     * @param customerDtoToCustomer the customer DTO to customer converter to set
      */
     @Autowired
     public void setCustomerDtoToCustomer(CustomerDtoToCustomer customerDtoToCustomer) {
@@ -61,19 +68,9 @@ public class CustomerController {
     }
 
     /**
-     * Sets the converter for converting between recipient model and recipient dto objects
+     * Sets the converter for converting between account model object and account DTO
      *
-     * @param recipientToRecipientDto the recipient to recipient dto converter to set
-     */
-    @Autowired
-    public void setRecipientToRecipientDto(RecipientToRecipientDto recipientToRecipientDto) {
-        this.recipientToRecipientDto = recipientToRecipientDto;
-    }
-
-    /**
-     * Sets the converter for converting between account model and account dto objects
-     *
-     * @param accountToAccountDto the account to account dto converter to set
+     * @param accountToAccountDto the account model object to account DTO converter to set
      */
     @Autowired
     public void setAccountToAccountDto(AccountToAccountDto accountToAccountDto) {
@@ -123,59 +120,77 @@ public class CustomerController {
      * @param id    the customer id
      * @param model the model object
      * @return the view to render
+     * @throws Exception
      */
     @RequestMapping(method = RequestMethod.GET, path = "/{id}")
-    public String showCustomer(@PathVariable Integer id, Model model) {
+    public String showCustomer(@PathVariable Integer id, Model model) throws Exception {
+
         Customer customer = customerService.get(id);
 
+        // command objects for customer show view
         model.addAttribute("customer", customerToCustomerDto.convert(customer));
         model.addAttribute("accounts", accountToAccountDto.convert(customer.getAccounts()));
-        model.addAttribute("recipients", recipientToRecipientDto.convert(customerService.listRecipients(id)));
+        model.addAttribute("accountTypes", AccountType.list());
+        model.addAttribute("customerBalance", customerService.getBalance(id));
+
+        // command objects for modals
+        AccountDto accountDto = new AccountDto();
+        AccountTransactionDto accountTransactionDto = new AccountTransactionDto();
+        accountTransactionDto.setId(id);
+
+        model.addAttribute("account", accountDto);
+        model.addAttribute("accountTransaction", accountTransactionDto);
+
+        model.addAttribute("transfer", new TransferDto());
         return "customer/show";
     }
 
     /**
-     * Saves the customer form submission and renders a view with the customer details
+     * Saves the customer form submission and renders a view
      *
-     * @param customerDto       the customer form object
+     * @param customerDto        the customer DTO object
+     * @param bindingResult      the binding result object
      * @param redirectAttributes the redirect attributes object
      * @return the view to render
      */
     @RequestMapping(method = RequestMethod.POST, path = {"/", ""}, params = "action=save")
-    public String saveCustomer(@ModelAttribute("customer") CustomerDto customerDto, RedirectAttributes redirectAttributes) {
+    public String saveCustomer(@Valid @ModelAttribute("customer") CustomerDto customerDto, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            return "customer/add-update";
+        }
+
         Customer savedCustomer = customerService.save(customerDtoToCustomer.convert(customerDto));
+
         redirectAttributes.addFlashAttribute("lastAction", "Saved " + savedCustomer.getFirstName() + " " + savedCustomer.getLastName());
         return "redirect:/customer/" + savedCustomer.getId();
     }
 
     /**
-     * Cancels the customer submission and renders the default customer view
+     * Cancels the customer submission and renders the default the customer view
      *
      * @return the view to render
      */
     @RequestMapping(method = RequestMethod.POST, path = {"/", ""}, params = "action=cancel")
     public String cancelSaveCustomer() {
+        // we could use an anchor tag in the view for this, but we might want to do something clever in the future here
         return "redirect:/customer/";
     }
 
     /**
      * Deletes the customer and renders the default customer view
      *
-     * @param id the customer id
+     * @param id                 the customer id
+     * @param redirectAttributes the redirect attributes object
      * @return the view to render
+     * @throws AssociationExistsException
+     * @throws CustomerNotFoundException
      */
-    @RequestMapping(method = RequestMethod.GET, path = "/{id}/delete")
-    public String deleteCustomer(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+    @RequestMapping(method = RequestMethod.GET, path = "{id}/delete")
+    public String deleteCustomer(@PathVariable Integer id, RedirectAttributes redirectAttributes) throws AssociationExistsException, CustomerNotFoundException {
         Customer customer = customerService.get(id);
         customerService.delete(id);
         redirectAttributes.addFlashAttribute("lastAction", "Deleted " + customer.getFirstName() + " " + customer.getLastName());
         return "redirect:/customer";
     }
-
-    /* For debugging purposes without a configured logging tool
-    @ExceptionHandler(Exception.class)
-    public void handleAllException(Exception ex) {
-        ex.printStackTrace();
-    }
-    */
 }

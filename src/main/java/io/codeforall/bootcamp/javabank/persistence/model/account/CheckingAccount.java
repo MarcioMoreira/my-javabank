@@ -1,6 +1,6 @@
 package io.codeforall.bootcamp.javabank.persistence.model.account;
 
-import jakarta.persistence.Entity;
+import javax.persistence.Entity;
 
 /**
  * A checking account with no restrictions

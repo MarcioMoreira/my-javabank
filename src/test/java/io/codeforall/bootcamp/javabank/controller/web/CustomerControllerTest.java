@@ -1,16 +1,13 @@
-package io.codeforall.bootcamp.javabank.controller;
+package io.codeforall.bootcamp.javabank.controller.web;
 
 import io.codeforall.bootcamp.javabank.command.AccountDto;
 import io.codeforall.bootcamp.javabank.command.CustomerDto;
-import io.codeforall.bootcamp.javabank.command.RecipientDto;
+import io.codeforall.bootcamp.javabank.services.CustomerService;
 import io.codeforall.bootcamp.javabank.converters.AccountToAccountDto;
 import io.codeforall.bootcamp.javabank.converters.CustomerDtoToCustomer;
 import io.codeforall.bootcamp.javabank.converters.CustomerToCustomerDto;
-import io.codeforall.bootcamp.javabank.converters.RecipientToRecipientDto;
 import io.codeforall.bootcamp.javabank.persistence.model.Customer;
-import io.codeforall.bootcamp.javabank.persistence.model.Recipient;
 import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
-import io.codeforall.bootcamp.javabank.services.CustomerService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.*;
@@ -38,9 +35,6 @@ public class CustomerControllerTest {
 
     @Mock
     private CustomerDtoToCustomer customerDtoToCustomer;
-
-    @Mock
-    private RecipientToRecipientDto recipientToRecipientDto;
 
     @Mock
     private AccountToAccountDto accountToAccountDto;
@@ -119,23 +113,15 @@ public class CustomerControllerTest {
 
         when(accountToAccountDto.convert(ArgumentMatchers.<Account>anyList())).thenReturn(accountDtos);
 
-        List<RecipientDto> recipientDtos = new ArrayList<>();
-        recipientDtos.add(new RecipientDto());
-        recipientDtos.add(new RecipientDto());
-
-        when(recipientToRecipientDto.convert(ArgumentMatchers.<Recipient>anyList())).thenReturn(recipientDtos);
-
         mockMvc.perform(get("/customer/" + fakeId))
                 .andExpect(status().isOk())
                 .andExpect(view().name("customer/show"))
                 .andExpect(model().attribute("customer", equalTo(customerDto)))
-                .andExpect(model().attribute("accounts", equalTo(accountDtos)))
-                .andExpect(model().attribute("recipients", equalTo(recipientDtos)));
+                .andExpect(model().attribute("accounts", equalTo(accountDtos)));
 
         verify(customerService, times(1)).get(fakeId);
         verify(customerToCustomerDto).convert(customer);
         verify(accountToAccountDto).convert(ArgumentMatchers.<Account>anyList());
-        verify(recipientToRecipientDto).convert(ArgumentMatchers.<Recipient>anyList());
 
     }
 
@@ -178,6 +164,13 @@ public class CustomerControllerTest {
         String phone = "999888";
         String email = "mail@gmail.com";
 
+        CustomerDto customerDto = new CustomerDto();
+
+        customerDto.setFirstName(firstName);
+        customerDto.setLastName(lastName);
+        customerDto.setPhone(phone);
+        customerDto.setEmail(email);
+
         Customer customer = new Customer();
         customer.setId(fakeID);
         customer.setFirstName(firstName);
@@ -189,7 +182,7 @@ public class CustomerControllerTest {
         when(customerService.save(ArgumentMatchers.any(Customer.class))).thenReturn(customer);
 
         mockMvc.perform(post("/customer")
-                //added action parameter to post so spring can use the right method to process this request
+                //Action parameter to post so spring can use the right method to process this request
                 .param("action", "save")
                 .param("id", fakeID.toString())
                 .param("firstName", firstName)
@@ -197,7 +190,7 @@ public class CustomerControllerTest {
                 .param("email", email)
                 .param("phone", phone))
                 // for debugging
-                //.andDo(print())
+                // .andDo(print())
                 .andExpect(status().is3xxRedirection());
 
         //verify properties of bound command object
@@ -217,7 +210,7 @@ public class CustomerControllerTest {
     @Test
     public void testSaveCustomerCancel() throws Exception {
         mockMvc.perform(post("/customer/")
-                //added action parameter to post so spring can use the right method to process this request
+                //Action parameter to post so spring can use the right method to process this request
                 .param("action", "cancel"))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection());

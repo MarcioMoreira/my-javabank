@@ -1,27 +1,17 @@
-# Test Settings
-test.debug=true
-test.h2.port=8082
-test.h2.location=/tmp/db
-test.jdbc.username=sa
-test.jdbc.password=
-test.jdbc.database=javabank
-test.schema.auto=create
-
 # Dev Settings
 dev.debug=true
-dev.jdbc.username=postgres
-dev.jdbc.password=pass
+dev.h2.port=8082
+dev.h2.location=/tmp/db
+dev.jdbc.username=sa
+dev.jdbc.password=
 dev.jdbc.database=javabank
 dev.schema.auto=create
-dev.jdbc.host=localhost
 
 # Prod Settings
 prod.debug=false
 prod.jdbc.username=postgres
-prod.jdbc.password=pass
+prod.jdbc.password=
 prod.jdbc.host=localhost
 prod.jdbc.database=javabank
-
-# Common settings
 pool.min=1
 pool.max=10

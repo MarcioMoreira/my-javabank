@@ -1,5 +1,6 @@
 package io.codeforall.bootcamp.javabank.factories;
 
+import io.codeforall.bootcamp.javabank.errors.ErrorMessage;
 import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
 import io.codeforall.bootcamp.javabank.persistence.model.account.AccountType;
 import io.codeforall.bootcamp.javabank.persistence.model.account.CheckingAccount;
@@ -21,6 +22,7 @@ public class AccountFactory {
     public Account createAccount(AccountType accountType) {
 
         Account newAccount;
+
         switch (accountType) {
             case CHECKING:
                 newAccount = new CheckingAccount();
@@ -29,8 +31,7 @@ public class AccountFactory {
                 newAccount = new SavingsAccount();
                 break;
             default:
-                newAccount = null;
-
+                throw new IllegalArgumentException(ErrorMessage.TRANSACTION_INVALID);
         }
 
         return newAccount;

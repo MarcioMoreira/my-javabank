@@ -1,5 +1,6 @@
 package io.codeforall.bootcamp.javabank.services;
 
+import io.codeforall.bootcamp.javabank.exceptions.*;
 import io.codeforall.bootcamp.javabank.persistence.dao.AccountDao;
 import io.codeforall.bootcamp.javabank.persistence.dao.CustomerDao;
 import io.codeforall.bootcamp.javabank.persistence.dao.RecipientDao;
@@ -56,7 +57,7 @@ public class CustomerServiceImplTest {
     }
 
     @Test
-    public void testGetBalance() {
+    public void testGetBalance() throws JavaBankException {
 
         // setup
         int fakeId = 9999;
@@ -76,8 +77,8 @@ public class CustomerServiceImplTest {
         assertEquals(a1.getBalance() + a2.getBalance(), result, DOUBLE_PRECISION);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetBalanceInvalidCustomer() {
+    @Test(expected = CustomerNotFoundException.class)
+    public void testGetBalanceInvalidCustomer() throws JavaBankException {
 
         // setup
         when(customerDao.findById(anyInt())).thenReturn(null);
@@ -103,7 +104,7 @@ public class CustomerServiceImplTest {
     }
 
     @Test
-    public void testListRecipients() {
+    public void testListRecipients() throws JavaBankException {
 
         // setup
         int fakeCustomerId = 9999;
@@ -121,8 +122,8 @@ public class CustomerServiceImplTest {
         assertEquals(1, recipients.size());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testListRecipientsInvalidCustomer() {
+    @Test(expected = CustomerNotFoundException.class)
+    public void testListRecipientsInvalidCustomer() throws JavaBankException {
 
         // setup
         when(customerDao.findById(anyInt())).thenReturn(null);
@@ -132,19 +133,46 @@ public class CustomerServiceImplTest {
     }
 
     @Test
-    public void testDelete() {
+    public void testDelete() throws JavaBankException {
 
         //setup
+        Customer fakeCustomer = new Customer();
+        int fakeCustomerId = 9999;
+        fakeCustomer.setId(fakeCustomerId);
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
 
         //exercise
-        customerService.delete(anyInt());
+        customerService.delete(fakeCustomerId);
 
         //verify
-        verify(customerDao, times(1)).delete(anyInt());
+        verify(customerDao, times(1)).delete(fakeCustomerId);
+
+    }
+
+    @Test(expected = AssociationExistsException.class)
+    public void testDeleteCustomerWithOpenAccount() throws JavaBankException {
+
+        //setup
+        Account a1 = new CheckingAccount();
+        a1.credit(100);
+        Customer fakeCustomer = new Customer();
+        int fakeCustomerId = 9999;
+        fakeCustomer.setId(fakeCustomerId);
+        fakeCustomer.getAccounts().add(0, a1);
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+
+        //exercise
+        customerService.delete(fakeCustomerId);
+
+        //verify
+        assertFalse(fakeCustomer.getAccounts().isEmpty());
+        verify(customerDao, times(1)).delete(fakeCustomerId);
     }
 
     @Test
-    public void testRemoveRecipient() {
+    public void testRemoveRecipient() throws JavaBankException {
 
         // setup
         int fakeCustomerId = 9999;
@@ -179,8 +207,8 @@ public class CustomerServiceImplTest {
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testRemoveRecipientInvalidCustomer() {
+    @Test(expected = CustomerNotFoundException.class)
+    public void testRemoveRecipientInvalidCustomer() throws JavaBankException {
 
         // setup
         int fakeRecipientId = 8888;
@@ -192,8 +220,8 @@ public class CustomerServiceImplTest {
         customerService.removeRecipient(1, fakeRecipientId);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testRemoveRecipientInvalidRecipient() {
+    @Test(expected = RecipientNotFoundException.class)
+    public void testRemoveRecipientInvalidRecipient() throws JavaBankException {
 
         // setup
         int fakeCustomerId = 9999;
@@ -205,8 +233,8 @@ public class CustomerServiceImplTest {
         customerService.removeRecipient(fakeCustomerId, 1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testRemoveRecipientInvalidRecipientOwner() {
+    @Test(expected = RecipientNotFoundException.class)
+    public void testRemoveRecipientInvalidRecipientOwner() throws JavaBankException {
 
         // setup
         int fakeRecipientId = 8888;
@@ -244,7 +272,7 @@ public class CustomerServiceImplTest {
     }
 
     @Test
-    public void testAddRecipient() {
+    public void testAddRecipient() throws JavaBankException {
 
         // setup
         int fakeCustomerId = 8888;
@@ -262,8 +290,8 @@ public class CustomerServiceImplTest {
         assertTrue(customerService.get(fakeCustomerId).getRecipients().contains(fakeRecipient));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testAddRecipientInvalidCustomer() {
+    @Test(expected = CustomerNotFoundException.class)
+    public void testAddRecipientInvalidCustomer() throws JavaBankException {
 
         // setup
         int fakeCustomerId = 8888;
@@ -276,8 +304,8 @@ public class CustomerServiceImplTest {
         customerService.addRecipient(fakeCustomerId, fakeRecipient);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testAddRecipientInvalidAccount() {
+    @Test(expected = AccountNotFoundException.class)
+    public void testAddRecipientInvalidAccount() throws JavaBankException {
 
         // setup
         int fakeCustomerId = 8888;
@@ -292,5 +320,178 @@ public class CustomerServiceImplTest {
         customerService.addRecipient(fakeCustomerId, fakeRecipient);
     }
 
+    @Test
+    public void testCloseAccount() throws JavaBankException {
+
+        // setup
+        int fakeCustomerId = 9999;
+        int fakeAccountId = 8888;
+        Customer fakeCustomer = spy(new Customer());
+        Account fakeAccount = new CheckingAccount();
+        fakeCustomer.getAccounts().add(fakeAccount);
+        fakeAccount.setCustomer(fakeCustomer);
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+        when(accountDao.findById(fakeAccountId)).thenReturn(fakeAccount);
+        when(fakeCustomer.getId()).thenReturn(fakeCustomerId);
+
+        // verify
+        assertTrue(fakeCustomer.getAccounts().contains(fakeAccount));
+
+        // exercise
+        customerService.closeAccount(fakeCustomerId, fakeAccountId);
+
+        // verify
+        assertFalse(fakeCustomer.getAccounts().contains(fakeAccount));
+        assertEquals(0, fakeCustomer.getAccounts().size());
+        verify(fakeCustomer, times(1)).removeAccount(fakeAccount);
+        verify(customerDao, times(1)).saveOrUpdate(fakeCustomer);
+    }
+
+    @Test(expected = CustomerNotFoundException.class)
+    public void testCloseAccountInvalidCustomer() throws JavaBankException {
+
+        // setup
+        int fakeAccountId = 8888;
+        Account fakeAccount = new CheckingAccount();
+        when(accountDao.findById(fakeAccountId)).thenReturn(fakeAccount);
+        when(customerDao.findById(anyInt())).thenReturn(null);
+
+        // exercise
+        customerService.closeAccount(1, fakeAccountId);
+    }
+
+    @Test(expected = AccountNotFoundException.class)
+    public void testCloseAccountInvalidAccount() throws JavaBankException {
+
+        //setup
+        int fakeCustomerId = 9999;
+        Customer fakeCustomer = new Customer();
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+        when(accountDao.findById(anyInt())).thenReturn(null);
+
+        //exercise
+        customerService.closeAccount(fakeCustomerId, anyInt());
+    }
+
+    @Test(expected = AccountNotFoundException.class)
+    public void testCloseAccountInvalidAccountOwner() throws JavaBankException {
+
+        // setup
+        int fakeCustomerId = 9999;
+        Customer fakeCustomer = new Customer();
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+        when(accountDao.findById(anyInt())).thenReturn(null);
+
+        int fakeRecipientId = 8888;
+        Account fakeAccount = new SavingsAccount();
+
+        int fakeCustomerIdThatIsTryingToClose = 9998;
+
+        fakeCustomer.setId(fakeCustomerId);
+
+        fakeAccount.setCustomer(fakeCustomer);
+
+        when(accountDao.findById(fakeRecipientId)).thenReturn(fakeAccount);
+        when(customerDao.findById(fakeCustomerIdThatIsTryingToClose)).thenReturn(fakeCustomer);
+
+        // exercise
+        customerService.closeAccount(fakeCustomerIdThatIsTryingToClose, fakeRecipientId);
+    }
+
+    @Test(expected = TransactionInvalidException.class)
+    public void testCloseAccountInvalidInvalidAccountBalance() throws JavaBankException {
+
+        // setup
+        int fakeCustomerId = 9999;
+        int fakeAccountId = 8888;
+        Customer fakeCustomer = spy(new Customer());
+        Account fakeAccount = new CheckingAccount();
+        fakeCustomer.getAccounts().add(fakeAccount);
+        fakeAccount.setCustomer(fakeCustomer);
+
+        fakeAccount.credit(1);
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+        when(accountDao.findById(fakeAccountId)).thenReturn(fakeAccount);
+        when(fakeCustomer.getId()).thenReturn(fakeCustomerId);
+
+        // verify
+        assertTrue(fakeCustomer.getAccounts().contains(fakeAccount));
+
+        // exercise
+        customerService.closeAccount(fakeCustomerId, fakeAccountId);
+    }
+
+    @Test
+    public void testAddAccountSavings() throws JavaBankException {
+
+        // setup
+        int fakeCustomerId = 8888;
+        int fakeAmount = 120;
+        Customer fakeCustomer = new Customer();
+
+        Account fakeAccount = new SavingsAccount();
+        fakeAccount.credit(fakeAmount);
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+
+        // exercise
+        customerService.addAccount(fakeCustomerId, fakeAccount);
+
+        // verify
+        assertTrue(customerService.get(fakeCustomerId).getAccounts().contains(fakeAccount));
+    }
+
+    @Test(expected = TransactionInvalidException.class)
+    public void testAddAccountSavingsLessThanMinimumAmount() throws JavaBankException {
+
+        // setup
+        int fakeCustomerId = 8888;
+        int fakeAmount = 10;
+        Customer fakeCustomer = new Customer();
+
+        Account fakeAccount = new SavingsAccount();
+        fakeAccount.credit(fakeAmount);
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+
+        // exercise
+        customerService.addAccount(fakeCustomerId, fakeAccount);
+    }
+
+    @Test
+    public void testAddAccountChecking() throws JavaBankException {
+
+        // setup
+        int fakeCustomerId = 8888;
+        int fakeAmount = 120;
+        Customer fakeCustomer = new Customer();
+
+        Account fakeAccount = new CheckingAccount();
+        fakeAccount.credit(fakeAmount);
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+
+        // exercise
+        customerService.addAccount(fakeCustomerId, fakeAccount);
+
+        // verify
+        assertTrue(customerService.get(fakeCustomerId).getAccounts().contains(fakeAccount));
+    }
+
+    @Test(expected = CustomerNotFoundException.class)
+    public void testAddAccountInvalidCustomer() throws JavaBankException {
+
+        // setup
+        int fakeCustomerId = 8888;
+
+        Account fakeAccount = new CheckingAccount();
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(null);
+
+        // exercise
+        customerService.addAccount(fakeCustomerId, fakeAccount);
+    }
 
 }

@@ -3,7 +3,7 @@ package io.codeforall.bootcamp.javabank.persistence.model.account;
 import io.codeforall.bootcamp.javabank.persistence.model.AbstractModel;
 import io.codeforall.bootcamp.javabank.persistence.model.Customer;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 /**
  * A generic account model entity to be used as a base for concrete types of accounts
@@ -26,6 +26,15 @@ public abstract class Account extends AbstractModel {
      */
     public double getBalance() {
         return balance;
+    }
+
+    /**
+     * Sets the account balance
+     *
+     * @param balance the amount to set
+     */
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 
     /**

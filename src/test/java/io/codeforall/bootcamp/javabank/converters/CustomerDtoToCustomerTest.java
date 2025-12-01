@@ -1,8 +1,8 @@
 package io.codeforall.bootcamp.javabank.converters;
 
 import io.codeforall.bootcamp.javabank.command.CustomerDto;
-import io.codeforall.bootcamp.javabank.persistence.model.Customer;
 import io.codeforall.bootcamp.javabank.services.CustomerService;
+import io.codeforall.bootcamp.javabank.persistence.model.Customer;
 import org.junit.Before;
 import org.junit.Test;
 

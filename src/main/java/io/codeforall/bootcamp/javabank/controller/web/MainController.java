@@ -1,4 +1,4 @@
-package io.codeforall.bootcamp.javabank.controller;
+package io.codeforall.bootcamp.javabank.controller.web;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +16,6 @@ public class MainController {
      */
     @RequestMapping("/")
     public String home() {
-       return "redirect:/customer/list";
+        return "redirect:/customer/list";
     }
 }

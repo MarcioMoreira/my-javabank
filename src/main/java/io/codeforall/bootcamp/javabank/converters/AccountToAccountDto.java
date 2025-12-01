@@ -12,21 +12,18 @@ import org.springframework.stereotype.Component;
 public class AccountToAccountDto extends AbstractConverter<Account, AccountDto> {
 
     /**
-     * Converts the account model object into a account dto object
-     *
+     * Converts the account model object into an account DTO
      * @param account the account
-     * @return the account dto
+     * @return the account DTO
      */
     @Override
     public AccountDto convert(Account account) {
 
         AccountDto accountDto = new AccountDto();
-
         accountDto.setId(account.getId());
         accountDto.setType(account.getAccountType());
-        accountDto.setBalance(account.getBalance());
+        accountDto.setBalance(String.valueOf(account.getBalance()));
 
         return accountDto;
-
     }
 }

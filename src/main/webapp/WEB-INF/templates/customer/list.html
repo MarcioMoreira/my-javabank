@@ -9,7 +9,6 @@
     <div th:replace="action :: action"></div>
 
     <h2>Customer List</h2>
-
     <div th:if="${not #lists.isEmpty(customers)}">
         <table class="table table-striped">
             <tr>
@@ -39,6 +38,7 @@
     <div class="col-sm-3">
         <a class="btn btn-primary" th:href="@{/customer/add}">New Customer</a>
     </div>
+
 </div>
 </body>
 </html>

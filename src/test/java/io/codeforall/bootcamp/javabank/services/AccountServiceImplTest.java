@@ -1,26 +1,40 @@
 package io.codeforall.bootcamp.javabank.services;
 
+import io.codeforall.bootcamp.javabank.exceptions.AccountNotFoundException;
+import io.codeforall.bootcamp.javabank.exceptions.CustomerNotFoundException;
+import io.codeforall.bootcamp.javabank.exceptions.JavaBankException;
+import io.codeforall.bootcamp.javabank.exceptions.TransactionInvalidException;
 import io.codeforall.bootcamp.javabank.persistence.dao.AccountDao;
+import io.codeforall.bootcamp.javabank.persistence.dao.CustomerDao;
+import io.codeforall.bootcamp.javabank.persistence.model.Customer;
 import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
+import io.codeforall.bootcamp.javabank.persistence.model.account.CheckingAccount;
+import io.codeforall.bootcamp.javabank.persistence.model.account.SavingsAccount;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class AccountServiceImplTest {
 
+    private static final double DOUBLE_PRECISION = 0.1;
     private AccountDao accountDao;
+    private CustomerDao customerDao;
     private AccountServiceImpl accountService;
 
     @Before
     public void setup() {
 
         accountDao = mock(AccountDao.class);
+        customerDao = mock(CustomerDao.class);
 
         accountService = new AccountServiceImpl();
         accountService.setAccountDao(accountDao);
-
+        accountService.setCustomerDao(customerDao);
     }
 
     @Test
@@ -40,169 +54,234 @@ public class AccountServiceImplTest {
         assertTrue(returnAcc.getId() == fakeId);
     }
 
-
     @Test
-    public void testDeposit() {
+    public void testDeposit() throws JavaBankException {
 
-        // setup
-        int fakeId = 1;
-        double amount = 100.5;
-        Account fakeAccount = mock(Account.class);
-        when(accountDao.findById(fakeId)).thenReturn(fakeAccount);
+        //setup
+        int fakeCustomerId = 9999;
+        int fakeAccountId = 8888;
+        double fakeAmount = 1000.00;
 
-        // exercise
-        accountService.deposit(fakeId, amount);
+        Account fakeAccount = Mockito.spy(CheckingAccount.class);
+        Customer fakeCustomer = new Customer();
+        fakeCustomer.setId(fakeCustomerId);
+        fakeCustomer.addAccount(fakeAccount);
+        fakeAccount.setId(fakeAccountId);
 
-        // verify
-        verify(fakeAccount, times(1)).credit(amount);
-        verify(accountDao, times(1)).saveOrUpdate(fakeAccount);
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+        when(accountDao.findById(fakeAccountId)).thenReturn(fakeAccount);
+        when(fakeAccount.getCustomer()).thenReturn(fakeCustomer);
+
+        //exercise
+        accountService.deposit(fakeAccountId, fakeCustomerId, fakeAmount);
+
+        //verify
+        assertTrue(fakeAccount.getBalance() == fakeAmount);
+        verify(customerDao, times(1)).findById(fakeCustomerId);
+        verify(accountDao, times(1)).findById(fakeAccountId);
+        verify(customerDao, times(1)).saveOrUpdate(fakeCustomer);
+        verify(fakeAccount, times(1)).credit(fakeAmount);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testDepositInvalidAccount() {
+    @Test(expected = CustomerNotFoundException.class)
+    public void testDepositInvalidCustomer() throws JavaBankException {
 
-        // setup
+        //setup
+        int fakeCustomerId = 9999;
+        int fakeAccountId = 8888;
+        double fakeAmount = 1000.00;
+        Account fakeAccount = mock(Account.class);
+
+        when(customerDao.findById(anyInt())).thenReturn(null);
+        when(accountDao.findById(anyInt())).thenReturn(fakeAccount);
+
+        //exercise
+        accountService.deposit(fakeCustomerId, fakeAccountId, fakeAmount);
+    }
+
+    @Test(expected = AccountNotFoundException.class)
+    public void testDepositInvalidAccount() throws JavaBankException {
+
+        //setup
+        int fakeCustomerId = 9999;
+        int fakeAccountId = 8888;
+        double fakeAmount = 1000.00;
+        Customer fakeCustomer = mock(Customer.class);
+
+        when(customerDao.findById(anyInt())).thenReturn(fakeCustomer);
         when(accountDao.findById(anyInt())).thenReturn(null);
 
-        // exercise
-        accountService.deposit(1, 100);
-
+        //exercise
+        accountService.deposit(fakeCustomerId, fakeAccountId, fakeAmount);
     }
+
+    @Test(expected = CustomerNotFoundException.class)
+    public void testDepositInvalidAccountOwner() throws JavaBankException {
+
+        // setup
+        double fakeAmount = 100;
+        int fakeCustomerThatIsDepositing = 9898;
+
+        int fakeCustomerId = 9999;
+        int fakeAccountId = 9999;
+        Customer fakeCustomer = new Customer();
+        Account fakeAccount = new SavingsAccount();
+        fakeCustomer.setId(fakeCustomerId);
+
+        fakeAccount.setCustomer(fakeCustomer);
+        fakeCustomer.addAccount(fakeAccount);
+
+        when(customerDao.findById(fakeCustomerThatIsDepositing)).thenReturn(fakeCustomer);
+        when(accountDao.findById(fakeAccountId)).thenReturn(fakeAccount);
+
+        // exercise
+        accountService.deposit(fakeCustomerThatIsDepositing, fakeAccountId, fakeAmount);
+    }
+
+    @Test(expected = TransactionInvalidException.class)
+    public void testDepositInvalidAmount() throws JavaBankException {
+
+        // setup
+        double fakeAmount = -10;
+
+        int fakeCustomerId = 9999;
+        int fakeAccountId = 9999;
+        Customer fakeCustomer = new Customer();
+        fakeCustomer.setId(fakeCustomerId);
+        Account fakeAccount = new SavingsAccount();
+        fakeAccount.setId(fakeAccountId);
+
+        fakeAccount.setCustomer(fakeCustomer);
+        fakeCustomer.addAccount(fakeAccount);
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+        when(accountDao.findById(fakeAccountId)).thenReturn(fakeAccount);
+
+        // exercise
+        accountService.deposit(fakeCustomerId, fakeAccountId, fakeAmount);
+    }
+
 
     @Test
-    public void testWithdraw() {
+    public void testWithdraw() throws JavaBankException {
 
         // setup
-        int fakeId = 1;
-        double amount = 100.5;
-        Account fakeAccount = mock(Account.class);
-        when(accountDao.findById(fakeId)).thenReturn(fakeAccount);
-        when(fakeAccount.canWithdraw()).thenReturn(true);
+        double fakeAmountToWithdraw = 100;
+        double fakeAccountBalance = 9999;
+
+        int fakeCustomerId = 9999;
+        int fakeAccountId = 9999;
+        Customer fakeCustomer = new Customer();
+        fakeCustomer.setId(fakeCustomerId);
+        Account fakeAccount = new CheckingAccount();
+
+        fakeAccount.setId(fakeAccountId);
+        fakeAccount.credit(fakeAccountBalance);
+        fakeAccount.setCustomer(fakeCustomer);
+        fakeCustomer.addAccount(fakeAccount);
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+        when(accountDao.findById(fakeAccountId)).thenReturn(fakeAccount);
 
         // exercise
-        accountService.withdraw(fakeId, amount);
+        accountService.withdraw(fakeCustomerId, fakeAccountId, fakeAmountToWithdraw);
 
-        // verify
-        verify(fakeAccount, times(1)).debit(amount);
-        verify(accountDao, times(1)).saveOrUpdate(fakeAccount);
+        //verify
+        Assert.assertEquals(accountService.get(fakeAccountId).getBalance(), fakeAccountBalance - fakeAmountToWithdraw, DOUBLE_PRECISION);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testWithdrawInvalidAccount() {
+    @Test(expected = CustomerNotFoundException.class)
+    public void testWithdrawInvalidCustomer() throws JavaBankException {
 
         // setup
-        when(accountDao.findById(anyInt())).thenReturn(null);
+        double fakeAmount = 100;
+        int fakeCustomerId = 9999;
+        int fakeAccountId = 9999;
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(null);
 
         // exercise
-        accountService.withdraw(1, 100);
-
+        accountService.withdraw(fakeCustomerId, fakeAccountId, fakeAmount);
     }
 
-    @Test
-    public void testTransfer() {
+    @Test(expected = AccountNotFoundException.class)
+    public void testWithdrawInvalidAccount() throws JavaBankException {
 
         // setup
-        int fakeSrcId = 9998;
-        int fakeDstId = 9999;
-        double amount = 100.5;
-        Account fakeSrcAccount = mock(Account.class);
-        Account fakeDstAccount = mock(Account.class);
-        when(accountDao.findById(fakeSrcId)).thenReturn(fakeSrcAccount);
-        when(accountDao.findById(fakeDstId)).thenReturn(fakeDstAccount);
-        when(fakeSrcAccount.canDebit(anyDouble())).thenReturn(true);
-        when(fakeDstAccount.canCredit(anyDouble())).thenReturn(true);
+        double fakeAmount = 100;
+        int fakeCustomerId = 9999;
+        int fakeAccountId = 9999;
+        Customer fakeCustomer = new Customer();
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+        when(accountDao.findById(fakeAccountId)).thenReturn(null);
 
         // exercise
-        accountService.transfer(fakeSrcId, fakeDstId, amount);
-
-        // validate
-        verify(accountDao, times(1)).saveOrUpdate(fakeSrcAccount);
-        verify(accountDao, times(1)).saveOrUpdate(fakeDstAccount);
-        verify(fakeSrcAccount, times(1)).canDebit(amount);
-        verify(fakeDstAccount, times(1)).canCredit(amount);
-        verify(fakeSrcAccount, times(1)).debit(amount);
-        verify(fakeDstAccount, times(1)).credit(amount);
-
+        accountService.withdraw(fakeCustomerId, fakeAccountId, fakeAmount);
     }
 
-    @Test
-    public void testTransferDebitNotPossible() {
+    @Test(expected = AccountNotFoundException.class)
+    public void testWithdrawInvalidAccountOwner() throws JavaBankException {
 
         // setup
-        int fakeSrcId = 9998;
-        int fakeDstId = 9999;
-        double amount = 100.5;
-        Account fakeSrcAccount = mock(Account.class);
-        Account fakeDstAccount = mock(Account.class);
-        when(accountDao.findById(fakeSrcId)).thenReturn(fakeSrcAccount);
-        when(accountDao.findById(fakeDstId)).thenReturn(fakeDstAccount);
-        when(fakeSrcAccount.canDebit(anyDouble())).thenReturn(false);
-        when(fakeDstAccount.canCredit(anyDouble())).thenReturn(true);
+        double fakeAmount = 100;
+        int fakeCustomerThatIsDepositing = 9898;
+
+        int fakeCustomerId = 9999;
+        int fakeAccountId = 9999;
+        Customer fakeCustomer = new Customer();
+        Account fakeAccount = new CheckingAccount();
+        fakeCustomer.setId(fakeCustomerId);
+
+        fakeAccount.setCustomer(fakeCustomer);
+        fakeCustomer.addAccount(fakeAccount);
+
+        when(customerDao.findById(fakeCustomerThatIsDepositing)).thenReturn(fakeCustomer);
+        when(accountDao.findById(fakeAccountId)).thenReturn(fakeAccount);
 
         // exercise
-        accountService.transfer(fakeSrcId, fakeDstId, amount);
-
-        // validate
-        verify(accountDao, times(1)).saveOrUpdate(fakeSrcAccount);
-        verify(accountDao, times(1)).saveOrUpdate(fakeDstAccount);
-        verify(fakeSrcAccount, times(1)).canDebit(amount);
-
+        accountService.withdraw(fakeAccountId, fakeCustomerThatIsDepositing, fakeAmount);
     }
 
-    @Test
-    public void testTransferCreditNotPossible() {
+    @Test(expected = TransactionInvalidException.class)
+    public void testWithdrawInvalidAmount() throws JavaBankException {
 
         // setup
-        int fakeSrcId = 9998;
-        int fakeDstId = 9999;
-        double amount = 100.5;
-        Account fakeSrcAccount = mock(Account.class);
-        Account fakeDstAccount = mock(Account.class);
-        when(accountDao.findById(fakeSrcId)).thenReturn(fakeSrcAccount);
-        when(accountDao.findById(fakeDstId)).thenReturn(fakeDstAccount);
-        when(fakeSrcAccount.canDebit(anyDouble())).thenReturn(true);
-        when(fakeDstAccount.canCredit(anyDouble())).thenReturn(false);
+        double fakeAmount = -10;
+
+        int fakeCustomerId = 9999;
+        int fakeAccountId = 9999;
+        Customer fakeCustomer = new Customer();
+        fakeCustomer.setId(fakeCustomerId);
+        Account fakeAccount = new CheckingAccount();
+        fakeAccount.setId(fakeAccountId);
+
+        fakeAccount.setCustomer(fakeCustomer);
+        fakeCustomer.addAccount(fakeAccount);
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+        when(accountDao.findById(fakeAccountId)).thenReturn(fakeAccount);
 
         // exercise
-        accountService.transfer(fakeSrcId, fakeDstId, amount);
-
-        // validate
-        verify(accountDao, times(1)).saveOrUpdate(fakeSrcAccount);
-        verify(accountDao, times(1)).saveOrUpdate(fakeDstAccount);
-        verify(fakeDstAccount, times(1)).canCredit(amount);
-
+        accountService.withdraw(fakeCustomerId, fakeAccountId, fakeAmount);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testTransferInvalidSrcAccount() {
+    @Test(expected = TransactionInvalidException.class)
+    public void testWithdrawInvalidAccountType() throws JavaBankException {
 
         // setup
-        int fakeSrcId = 9998;
-        int fakeDstId = 9999;
-        double amount = 100.5;
-        Account fakeDstAccount = mock(Account.class);
-        when(accountDao.findById(fakeSrcId)).thenReturn(null);
-        when(accountDao.findById(fakeDstId)).thenReturn(fakeDstAccount);
+        double fakeAmount = 100;
+
+        int fakeCustomerId = 9999;
+        int fakeAccountId = 9999;
+        Customer fakeCustomer = new Customer();
+        Account fakeAccount = new SavingsAccount();
+
+        when(customerDao.findById(fakeCustomerId)).thenReturn(fakeCustomer);
+        when(accountDao.findById(fakeAccountId)).thenReturn(fakeAccount);
 
         // exercise
-        accountService.transfer(fakeSrcId, fakeDstId, amount);
-
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testTransferInvalidDstAccount() {
-
-        // setup
-        int fakeSrcId = 9998;
-        int fakeDstId = 9999;
-        double amount = 100.5;
-        Account fakeSrcAccount = mock(Account.class);
-        when(accountDao.findById(fakeSrcId)).thenReturn(fakeSrcAccount);
-        when(accountDao.findById(fakeDstId)).thenReturn(null);
-
-        // exercise
-        accountService.transfer(fakeSrcId, fakeDstId, amount);
-
+        accountService.withdraw(fakeCustomerId, fakeAccountId, fakeAmount);
     }
 
 }

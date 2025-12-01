@@ -2,7 +2,7 @@ package io.codeforall.bootcamp.javabank.persistence.model;
 
 import io.codeforall.bootcamp.javabank.persistence.model.account.Account;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -3,10 +3,10 @@ package io.codeforall.bootcamp.javabank.persistence.dao.jpa;
 import io.codeforall.bootcamp.javabank.persistence.dao.Dao;
 import io.codeforall.bootcamp.javabank.persistence.model.Model;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 /**
@@ -45,7 +45,6 @@ public abstract class GenericJpaDao<T extends Model> implements Dao<T> {
      */
     @Override
     public List<T> findAll() {
-
 
         CriteriaQuery<T> criteriaQuery = em.getCriteriaBuilder().createQuery(modelType);
         Root<T> root = criteriaQuery.from(modelType);

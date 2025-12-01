@@ -19,6 +19,10 @@
     <!-- Base package to search for spring beans -->
     <context:component-scan base-package="io.codeforall.bootcamp.javabank"/>
 
+    <mvc:interceptors>
+        <bean class="io.codeforall.bootcamp.javabank.interceptor.LogRequestsInterceptor"/>
+    </mvc:interceptors>
+
     <import resource="persistence.xml"/>
     <import resource="presentation.xml"/>
 
