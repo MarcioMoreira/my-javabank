@@ -2,6 +2,11 @@
 db.host=localhost
 db.name=javabank
 db.username=postgres
-db.password=
+db.password=pass
 schema.auto=create
 debug.sql=true
+
+# AI Configuration
+ai.api_key=XXXXXXXXXX
+ai.chat.model=gpt-4o
+ai.temperature=0.4
