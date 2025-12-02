@@ -1,17 +1,19 @@
 package io.codeforall.bootcamp.javabank.controllers.rest;
 
+
+import io.codeforall.bootcamp.javabank.converters.GenerationToAnswerDto;
+import io.codeforall.bootcamp.javabank.dtos.AnswerDto;
+import io.codeforall.bootcamp.javabank.dtos.QuestionDto;
 import io.codeforall.bootcamp.javabank.services.AiService;
-import org.springframework.ai.chat.model.Generation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 /**
- * A REST API AI Controller responsible for rendering jokes
+ * A REST API AI Controller responsible for rendering AI responses
  */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -19,15 +21,29 @@ import org.springframework.web.bind.annotation.RestController;
 public class RestAiController {
 
     private AiService aiService;
+    private GenerationToAnswerDto generationToAnswerDto;
+
 
     /**
-     * Handles HTTP POST requests
-     * @return a {@link ResponseEntity} containing the generated joke of type {@link Generation}
-     * and an HTTP status of {@code OK}.
+     * Handles POST requests to the "/info" endpoint.
+     * This method processes a question sent in the request body and returns a corresponding answer.
+     * It validates the input {@link QuestionDto}, and if validation errors are found, it responds with
+     * a {@code 400 BAD REQUEST} status. If the input is valid, the result is converted into an {@link AnswerDto}.
+     *
+     * @param questionDto    the {@link QuestionDto} containing the question to be processed.
+     * @param bindingResult  the {@link BindingResult} used to check for validation errors in the {@code questionDto}.
+     * @return a {@link ResponseEntity} containing:
+     *         - An {@link AnswerDto} with the processed answer and a {@code 200 OK} status if successful.
+     *         - A {@code 400 BAD REQUEST} status if validation errors are present.
      */
-    @RequestMapping(method = RequestMethod.POST, path={"/", ""})
-    public ResponseEntity<Generation> joke() {
-        return new ResponseEntity<>(aiService.joke(), HttpStatus.OK);
+    @RequestMapping(method = RequestMethod.POST, path = {"/info"})
+    public ResponseEntity<AnswerDto> info(@Valid @RequestBody QuestionDto questionDto, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(generationToAnswerDto.convert(aiService.info(questionDto.getQuestion())), HttpStatus.OK);
     }
 
     /**
@@ -37,5 +53,14 @@ public class RestAiController {
     @Autowired
     public void setAiService(AiService aiService) {
         this.aiService = aiService;
+    }
+
+    /**
+     * Set the GenerationToAnswerDto converter
+     * @param generationToAnswerDto to set
+     */
+    @Autowired
+    public void setGenerationToAnswerDto(GenerationToAnswerDto generationToAnswerDto) {
+        this.generationToAnswerDto = generationToAnswerDto;
     }
 }

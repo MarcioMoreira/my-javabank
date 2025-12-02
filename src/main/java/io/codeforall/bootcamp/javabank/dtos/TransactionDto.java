@@ -21,7 +21,7 @@ public class TransactionDto {
 
 
     /**
-     * Get the id of the transaction DTO
+     * Get the account id of the transaction DTO
      * @return the account DTO id
      */
     public Integer getAccountId() {
@@ -37,7 +37,7 @@ public class TransactionDto {
     }
 
     /**
-     * Set the id of the transaction DTO
+     * Set the account id of the transaction DTO
      * @param accountId to set
      */
     public void setId(Integer accountId) {
