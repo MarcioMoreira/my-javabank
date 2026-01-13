@@ -11,65 +11,67 @@
 ##
 🧱 Architecture & Design
 
-  JavaBank follows a Model–View–Controller (MVC) architecture to ensure separation of concerns and maintainability:
+  -JavaBank follows a Model–View–Controller (MVC) architecture to ensure separation of concerns and maintainability:
 
   Model
-  Business entities such as accounts, users, and transactions
+  -Business entities such as accounts, users, and transactions
 
   Controller
-  Handles HTTP requests and orchestrates application flow
+  -Handles HTTP requests and orchestrates application flow
 
   Service
-  Encapsulates business logic and validation
+  -Encapsulates business logic and validation
 
   Repository
-  Manages data access and persistence
+  -Manages data access and persistence
 
-  This structure mirrors enterprise-grade Spring applications and prepares the codebase for scalability.
+  -This structure mirrors enterprise-grade Spring applications and prepares the codebase for scalability.
 
 
 ##
 🚀 Features
 
-  Account creation and management
+  -Account creation and management
 
-  Deposit, withdrawal, and transfer operations
+  -Deposit, withdrawal, and transfer operations
 
-  Business rule validation (e.g. balance checks)
+  -Business rule validation (e.g. balance checks)
 
-  Exception handling and error control
+  -Exception handling and error control
 
-  Clear separation between web layer and business logic
+  -Clear separation between web layer and business logic
 
 
 ##
 🛠️ Tech Stack
 
-  Java
+  -Java
 
-  Spring Framework
+  -Spring Framework
 
-  Spring MVC
+  -Spring MVC
 
-  Dependency Injection
+  -Dependency Injection
 
-  Object-Oriented Programming
+  -Object-Oriented Programming
 
-  Clean Code & SOLID principles
+  -Clean Code & SOLID principles
+
+  -Hibernate
 
 
 ##
 🎓 Learning Outcomes
 
-  Understanding and applying MVC architecture in Spring
+  -Understanding and applying MVC architecture in Spring
 
-  Structuring a backend application using layers
+  -Structuring a backend application using layers
 
-  Writing readable, maintainable Java code
+  -Writing readable, maintainable Java code
 
-  Handling business logic independently from controllers
+  -Handling business logic independently from controllers
 
-  Preparing applications for future integrations (REST APIs, databases, security)
+  -Preparing applications for future integrations (REST APIs, databases, security)
 
 
 ##
