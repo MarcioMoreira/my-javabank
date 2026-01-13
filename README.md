@@ -7,7 +7,7 @@
     layered architecture, and clean code.
 
 
-
+####
 🧱 Architecture & Design
 
   JavaBank follows a Model–View–Controller (MVC) architecture to ensure separation of concerns and maintainability:
@@ -27,7 +27,7 @@
   This structure mirrors enterprise-grade Spring applications and prepares the codebase for scalability.
 
 
-
+##
 🚀 Features
 
   Account creation and management
@@ -41,7 +41,7 @@
   Clear separation between web layer and business logic
 
 
-
+##
 🛠️ Tech Stack
 
   Java
@@ -57,7 +57,7 @@
   Clean Code & SOLID principles
 
 
-
+##
 🎓 Learning Outcomes
 
   Understanding and applying MVC architecture in Spring
@@ -71,7 +71,7 @@
   Preparing applications for future integrations (REST APIs, databases, security)
 
 
-
+##
 🧠 Bootcamp Mindset
 
   This project was built with a focus on learning by doing.
