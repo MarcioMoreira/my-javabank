@@ -11,7 +11,8 @@
 ##
 🧱 Architecture & Design
 
-      - JavaBank follows a Model–View–Controller (MVC) architecture to ensure separation of concerns and maintainability:
+      - JavaBank follows a Model–View–Controller (MVC) architecture to ensure separation 
+      of concerns and maintainability:
 
   Model
       - Business entities such as accounts, users, and transactions
