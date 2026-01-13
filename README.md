@@ -7,7 +7,8 @@
     layered architecture, and clean code.
 
 
-####
+##
+##
 🧱 Architecture & Design
 
   JavaBank follows a Model–View–Controller (MVC) architecture to ensure separation of concerns and maintainability:
