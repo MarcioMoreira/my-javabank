@@ -1,8 +1,10 @@
 🧪 JavaBank — Spring MVC Banking Application (Bootcamp Project)
 
-    JavaBank is a backend-focused banking application developed during a Full Stack Java Bootcamp to practice real-world software architecture using Spring and the MVC pattern.
+    JavaBank is a backend-focused banking application developed during a Full Stack Java Bootcamp to practice 
+    real-world software architecture using Spring and the MVC pattern.
 
-    The project simulates core banking operations while reinforcing best practices in backend development, layered architecture, and clean code.
+    The project simulates core banking operations while reinforcing best practices in backend development, 
+    layered architecture, and clean code.
 
 
 
